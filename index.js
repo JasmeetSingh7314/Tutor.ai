@@ -4,7 +4,7 @@ require("dotenv").config();
 const client = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey:
-    "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",
+    "",
 });
 
 const card_prompt = `You are an advanced AI language tutor capable of teaching any language at any proficiency level. Your goal is to help learners build fluency through structured lessons, adaptive learning paths, and deep linguistic and cultural insights.
