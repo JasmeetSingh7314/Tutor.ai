@@ -1,7 +1,8 @@
 import os
+import re
 import instructor
 from typing import List, Set
-from pydantic import BaseModel,Field
+from pydantic import BaseModel,Field, ValidationError
 from openai import OpenAI
 
 client=instructor.patch(
@@ -12,14 +13,14 @@ client=instructor.patch(
     mode=instructor.Mode.JSON
 )
 
-class Exercise(BaseModel):
+class Card(BaseModel):
     word: str = Field(..., min_length=1, description="Target vocabulary word")
     reading: str = Field(..., pattern=r"^[\u3040-\u309Fー]+$", description="Furigana in hiragana")
     sentence: str = Field(..., min_length=5, description="Example sentence using the word")
     translation: str = Field(..., min_length=5, description="English translation")
 
 class VocabularyCards(BaseModel):
-    examples: List[Exercise]
+    examples: List[Card]
 
 # Explicit prompt with formatting rules
 card_prompt = """You are a Japanese vocabulary teacher. Generate 15 vocabulary cards for N4-level learners.
@@ -58,9 +59,9 @@ completion=client.beta.chat.completions.parse(
 
 )
 
-def deduplicate_cards(cards: List[Exercise]) -> List[Exercise]:
+def deduplicate_cards(cards: List[Card]) -> List[Card]:
     seen_words: Set[str] = set()
-    unique_cards: List[Exercise] = []
+    unique_cards: List[Card] = []
 
     for card in cards:
         if card.word not in seen_words:
@@ -80,50 +81,90 @@ for i in unique_cards:
     print(i.translation)
     print("*******************************************************")
 
+
+
 ### GENERATING PRACTICE EXERCISES
+# Serialize Exercise objects into a readable string
+unique_cards_str = "\n".join(
+    f"Word: {card.word}\nReading: {card.reading}\nSentence: {card.sentence}\nTranslation: {card.translation}\n"
+    for card in unique_cards
+)
+
+client2=instructor.patch(
+     OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=os.getenv("OPEN_ROUTER_KEY_2")
+    ),
+    mode=instructor.Mode.JSON
+)
 class Questions(BaseModel):
-    ques:str=Field(..., min_length=5, description="Question used for practice of that word")
-    ans:str=Field(...,min_length=2,description='Answer to the question i.e the word')
-    options:List[str]=Field(...,min_length=4,description='Give 4 options to the fill in ques')
+    ques:str=Field( min_length=5, description="Question used for practice of that word")
+    ans:str=Field(min_length=2,description='Answer to the question i.e the word')
+    options:List[str]=Field(min_length=4,max_length=4,description='Give 4 options to the fill in ques')
 
-class Practice(BaseModel):
- quiz:List[Questions]
+class Quiz_Model(BaseModel):
+ question_list:List[Questions]
 
 
-quiz_prompt=f"""
-You are a Japanese vocabulary teacher. Generate 5 vocabulary fill in the blanks exercises for N4-level learners.
--Provide 4 options to confuse the user
-- Return STRICTLY in JSON format
-- Sentences must use the word naturally
-- Never use placeholders like "..."
-- Ensure NO REPEATED WORDS OR SENTENCES
- Create exercises from this array which contains the word. The array is given below:
-   {unique_cards}
+# Create quiz prompt
+quiz_prompt = f"""
+You are a Japanese vocabulary teacher. Generate 5 fill-in-the-blank exercises for N4-level learners.
+- Use the following vocabulary words and sentences:
+{unique_cards_str}
+- Provide 4 options for each question, including the correct answer.
+- Return STRICTLY in JSON format with the root key `quiz`.
+- Example:
+{{
+  "quiz": [
+    {{
+      "ques": "母は毎晩_______を作ります。",
+      "ans": "料理",
+      "options": ["料理", "消す", "遅い", "電気"]
+    }}
+  ]
+}}
+- Never use placeholders like "...".
+- Ensure NO REPEATED WORDS OR SENTENCES.
 """
 
-exercises=client.beta.chat.completions.parse(
-   model='deepseek/deepseek-chat:free',
-   response_format=Practice,
+# Generate quiz questions
+response = client2.beta.chat.completions.parse(
+    model="deepseek/deepseek-chat:free",
+    response_format=Quiz_Model,  
     messages=[
-        {
-         'role':'system',
-         'content':quiz_prompt
-        },
-        {
-         'role':'user',
-         'content':f'Test me on my knowledge'}
-       
+        {"role": "system", "content": quiz_prompt},
+        {"role": "user", "content": "Generate quiz questions for these words."}
     ],
-    temperature=0.1,      # Reduce randomness
-    max_tokens=1000,      # Allocate enough tokens 
+    temperature=0.1,
+    max_tokens=1000, 
 )
-quiz=completion.choices[0].message.parsed.quiz
-for i in quiz:
-    print(i.ques)
-    print(i.ans)
-    print(i.options)
-    print("*******************************************************")
-#
+# Extract JSON from markdown (if present)
+def extract_json_from_markdown(response: str) -> str:
+    match = re.search(r"```json\s*({.*?})\s*```", response, re.DOTALL)
+    if match:
+        return match.group(1)
+    return response  # Fallback: return the raw response
+
+
+raw_response = response.choices[0].message.parsed
+json_response = extract_json_from_markdown(raw_response)
+
+
+# Print the raw response to debug
+print("Raw response:",json_response)
+
+# # Parse and validate the response
+# try:
+#     exercises = Quiz_Model.model_validate_json(response.choices[0].message.content)
+# except ValidationError as e:
+#     print(f"Validation error: {e}")
+# else:
+#     # Print the result
+#     for question in exercises.quiz:
+#         print(f"Question: {question.ques}")
+#         print(f"Options: {question.options}")
+#         print(f"Answer: {question.ans}")
+#         print("*******************************************************")
 # client=instructor.patch(
 #      OpenAI(
 #         base_url="http://localhost:11434/v1",
