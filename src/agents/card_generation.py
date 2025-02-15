@@ -1,5 +1,4 @@
 import os
-import re
 import instructor
 from typing import List, Set
 from pydantic import BaseModel,Field, ValidationError
@@ -22,10 +21,9 @@ class Card(BaseModel):
 class VocabularyCards(BaseModel):
     examples: List[Card]
 
-# Explicit prompt with formatting rules
-card_prompt = """You are a Japanese vocabulary teacher. Generate 15 vocabulary cards for N4-level learners.
+# # Explicit prompt with formatting rules
+card_prompt = f"""You are a Japanese vocabulary teacher. Generate 15 vocabulary cards for N4-level learners.
 - Return STRICTLY in JSON format
-- Use ONLY hiragana for readings (e.g., かくにん)
 - Use KANJI ONLY for the word in sentences
 - Sentences must use the word naturally
 - Never use placeholders like "..."
@@ -83,12 +81,12 @@ for i in unique_cards:
 
 
 
-### GENERATING PRACTICE EXERCISES
-# Serialize Exercise objects into a readable string
+## GENERATING PRACTICE EXERCISES
 unique_cards_str = "\n".join(
     f"Word: {card.word}\nReading: {card.reading}\nSentence: {card.sentence}\nTranslation: {card.translation}\n"
     for card in unique_cards
 )
+
 
 client2=instructor.patch(
      OpenAI(
@@ -103,7 +101,7 @@ class Questions(BaseModel):
     options:List[str]=Field(min_length=4,max_length=4,description='Give 4 options to the fill in ques')
 
 class Quiz_Model(BaseModel):
- question_list:List[Questions]
+ quiz:List[Questions]
 
 
 # Create quiz prompt
@@ -125,6 +123,7 @@ You are a Japanese vocabulary teacher. Generate 5 fill-in-the-blank exercises fo
 }}
 - Never use placeholders like "...".
 - Ensure NO REPEATED WORDS OR SENTENCES.
+- Do NOT include Markdown code blocks (e.g., ```json) or any other formatting.
 """
 
 # Generate quiz questions
@@ -138,40 +137,19 @@ response = client2.beta.chat.completions.parse(
     temperature=0.1,
     max_tokens=1000, 
 )
-# Extract JSON from markdown (if present)
-def extract_json_from_markdown(response: str) -> str:
-    match = re.search(r"```json\s*({.*?})\s*```", response, re.DOTALL)
-    if match:
-        return match.group(1)
-    return response  # Fallback: return the raw response
 
 
 raw_response = response.choices[0].message.parsed
-json_response = extract_json_from_markdown(raw_response)
-
 
 # Print the raw response to debug
-print("Raw response:",json_response)
+print("Raw response:",raw_response)
+for i in raw_response.quiz:
+    print(i.ques)
+    for index, j in enumerate(i.options, start=1):
+        print(f"{index}. {j}")
+    print(i.ans)
+    print("*******************************************************")
 
-# # Parse and validate the response
-# try:
-#     exercises = Quiz_Model.model_validate_json(response.choices[0].message.content)
-# except ValidationError as e:
-#     print(f"Validation error: {e}")
-# else:
-#     # Print the result
-#     for question in exercises.quiz:
-#         print(f"Question: {question.ques}")
-#         print(f"Options: {question.options}")
-#         print(f"Answer: {question.ans}")
-#         print("*******************************************************")
-# client=instructor.patch(
-#      OpenAI(
-#         base_url="http://localhost:11434/v1",
-#         api_key="ollama"
-#     ),
-#     mode=instructor.Mode.JSON
-# )
 # language=input('Enter the language you want to learn:')
 # known_lang=input('Enter the language you know:')
 # Type=input('Enter the type of exercise (vocab/grammar):')
