@@ -4,59 +4,19 @@ from typing import List, Set
 from pydantic import BaseModel,Field, ValidationError
 from openai import OpenAI
 
-client=instructor.patch(
-     OpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=os.getenv("OPEN_ROUTER_KEY")
-    ),
-    mode=instructor.Mode.JSON
-)
 
+## LESSON CLASSES
 class Card(BaseModel):
     word: str = Field(..., min_length=1, description="Target vocabulary word")
-    reading: str = Field(..., pattern=r"^[\u3040-\u309Fー]+$", description="Furigana in hiragana")
+    reading: str = Field(..., description="Pronunciation or reading of the word (e.g., Hiragana for Japanese, Pinyin for Chinese)")
     sentence: str = Field(..., min_length=5, description="Example sentence using the word")
     translation: str = Field(..., min_length=5, description="English translation")
 
 class VocabularyCards(BaseModel):
     examples: List[Card]
 
-# # Explicit prompt with formatting rules
-card_prompt = f"""You are a Japanese vocabulary teacher. Generate 15 vocabulary cards for N4-level learners.
-- Return STRICTLY in JSON format
-- Use KANJI ONLY for the word in sentences
-- Sentences must use the word naturally
-- Never use placeholders like "..."
-- Ensure NO REPEATED WORDS OR SENTENCES
-- Example:
-{
-  "examples": [
-    {
-      "word": "確認",
-      "reading": "かくにん",
-      "sentence": "明日の会議の時間を確認してください。",
-      "translation": "Please confirm the time for tomorrow's meeting."
-    }
-  ]
-}"""
-completion=client.beta.chat.completions.parse(
-   model='deepseek/deepseek-chat:free',
-   response_format=VocabularyCards,
-    messages=[
-        {
-         'role':'system',
-         'content':card_prompt
-        },
-        {
-         'role':'user',
-         'content':f'I want to learn Japanese and I want to work on my vocab skills.I am currently a N4'}
-       
-    ],
-    temperature=0.1,      # Reduce randomness
-    max_tokens=1000,      # Allocate enough tokens
 
-)
-
+## DE-DUPLICATION_LOGIC
 def deduplicate_cards(cards: List[Card]) -> List[Card]:
     seen_words: Set[str] = set()
     unique_cards: List[Card] = []
@@ -68,100 +28,59 @@ def deduplicate_cards(cards: List[Card]) -> List[Card]:
 
     return unique_cards
 
-cards=completion.choices[0].message.parsed.examples
-unique_cards = deduplicate_cards(cards)
-
-
-for i in unique_cards:
-    print(i.word)
-    print(i.reading)
-    print(i.sentence)
-    print(i.translation)
-    print("*******************************************************")
-
-
-
-## GENERATING PRACTICE EXERCISES
-unique_cards_str = "\n".join(
-    f"Word: {card.word}\nReading: {card.reading}\nSentence: {card.sentence}\nTranslation: {card.translation}\n"
-    for card in unique_cards
-)
-
-
-client2=instructor.patch(
-     OpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=os.getenv("OPEN_ROUTER_KEY_2")
-    ),
-    mode=instructor.Mode.JSON
-)
-class Questions(BaseModel):
-    ques:str=Field( min_length=5, description="Question used for practice of that word")
-    ans:str=Field(min_length=2,description='Answer to the question i.e the word')
-    options:List[str]=Field(min_length=4,max_length=4,description='Give 4 options to the fill in ques')
-
-class Quiz_Model(BaseModel):
- quiz:List[Questions]
-
-
-# Create quiz prompt
-quiz_prompt = f"""
-You are a Japanese vocabulary teacher. Generate 5 fill-in-the-blank exercises for N4-level learners.
-- Use the following vocabulary words and sentences:
-{unique_cards_str}
-- Provide 4 options for each question, including the correct answer.
-- Return STRICTLY in JSON format with the root key `quiz`.
-- Example:
-{{
-  "quiz": [
+# # Explicit prompt with formatting rules
+def generate_card_prompt(lang:str,level:str)->str:
+    return f"""You are a {lang} vocabulary teacher. Generate 5 vocabulary cards for {level}-level learners.
+    - Return STRICTLY in JSON format
+    - Use the appropriate script for the word in sentences (e.g., Kanji for Japanese, Hanzi for Chinese, etc.)
+    - Sentences must use the word naturally
+    - Never use placeholders like "..."
+    - Ensure NO REPEATED WORDS OR SENTENCES
+    - Do NOT include Markdown code blocks (e.g., ```json) or any other formatting.
+    - Example:
     {{
-      "ques": "母は毎晩_______を作ります。",
-      "ans": "料理",
-      "options": ["料理", "消す", "遅い", "電気"]
-    }}
-  ]
-}}
-- Never use placeholders like "...".
-- Ensure NO REPEATED WORDS OR SENTENCES.
-- Do NOT include Markdown code blocks (e.g., ```json) or any other formatting.
-"""
-
-# Generate quiz questions
-response = client2.beta.chat.completions.parse(
-    model="deepseek/deepseek-chat:free",
-    response_format=Quiz_Model,  
-    messages=[
-        {"role": "system", "content": quiz_prompt},
-        {"role": "user", "content": "Generate quiz questions for these words."}
-    ],
-    temperature=0.1,
-    max_tokens=1000, 
-)
+    "examples": [
+        {{
+        "word": "確認",
+        "reading": "かくにん",
+        "sentence": "明日の会議の時間を確認してください。",
+        "translation": "Please confirm the time for tomorrow's meeting."
+        }}
+    ]
+    }}"""
 
 
-raw_response = response.choices[0].message.parsed
+def create_language_lesson(lang:str,level:str):   
+    client=instructor.patch(
+        OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPEN_ROUTER_KEY")
+        ),
+        mode=instructor.Mode.JSON
+    )
+    card_prompt=generate_card_prompt(lang,level)
+    completion = client.beta.chat.completions.parse(
+        model="deepseek/deepseek-chat:free",
+        response_format=VocabularyCards,
+        messages=[
+            {"role": "system", "content": card_prompt},
+            {"role": "user", "content": f"I want to learn {lang} and I want to work on my vocab skills. I am currently at {level} level."}
+        ],
+        temperature=0.1,
+        max_tokens=1000,
+    )
 
-# Print the raw response to debug
-print("Raw response:",raw_response)
-for i in raw_response.quiz:
-    print(i.ques)
-    for index, j in enumerate(i.options, start=1):
-        print(f"{index}. {j}")
-    print(i.ans)
-    print("*******************************************************")
-
-# language=input('Enter the language you want to learn:')
-# known_lang=input('Enter the language you know:')
-# Type=input('Enter the type of exercise (vocab/grammar):')
-
-# language="japanese"
-# known_lang='english'
-# Type='Vocabulary'
-# level='Beginner'
-
-# class User_prompt(BaseModel):
-#     name :str=Field(title='Student Name',description='This is the name of the student')
-#     language:str=Field(...,description='Language that the user wants to study')
-#     Type:str=Field(...,description='What the user wants to study could be vocabulary,speaking skills,etc.')
-#     level:str=Field(title='Level',description='Level or proficiency in current language')
-#     known_language:str=Field(...,description='The language the user already understands and learns in.')
+    cards = completion.choices[0].message.parsed.examples
+    unique_cards = deduplicate_cards(cards)
+    for i in unique_cards:
+        print(i.word)
+        print(i.reading)
+        print(i.sentence)
+        print(i.translation)
+        print("*******************************************************")
+       # Generate quiz
+    unique_cards_str = "\n".join(
+        f"Word: {card.word}\nReading: {card.reading}\nSentence: {card.sentence}\nTranslation: {card.translation}\n"
+        for card in unique_cards
+    )
+    return unique_cards_str

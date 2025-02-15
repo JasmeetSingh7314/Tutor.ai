@@ -1,3 +1,4 @@
 /.env
 /.venv
 /src/misc
+/src/agents/__pycache__
