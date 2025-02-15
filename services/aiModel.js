@@ -3,8 +3,7 @@ const prompt = require("../utils/systemPrompt");
 
 const client = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
-  apiKey:
-    "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",
+  apiKey: "",
 });
 
 const system_prompt = prompt;
