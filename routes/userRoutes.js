@@ -1,9 +1,13 @@
-const User = require("../models/user");
-const Material = require("../models/material");
 const express = require("express");
+const UserHandler = require("../controllers/userController");
+const User = require("../models/user");
 
 const router = express.Router();
 
-router.post("/create-user", async () => {
-  
+const handler = new UserHandler(User);
+
+router.post("/create-user", (req, res) => {
+  handler.createUser(req, res);
 });
+
+module.exports = router;
