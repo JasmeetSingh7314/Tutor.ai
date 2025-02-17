@@ -1,4 +1,8 @@
 /.env
 /.venv
-/src/misc
-/src/agents/__pycache__
+/app/misc
+/app/__pycache__
+/app/agents/__pycache__
+/app/models/__pycache__
+/app/utils/__pycache__
+/.vscode
