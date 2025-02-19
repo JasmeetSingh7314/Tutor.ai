@@ -2,9 +2,9 @@ from fastapi import FastAPI, HTTPException, requests
 import logging
 
 from pydantic import BaseModel
-from agents.card_generation import create_language_lesson
-from agents.quiz_generation import generate_quiz
-from agents.word_meaning import get_meaning
+from scripts.card_generation import create_language_lesson
+from scripts.quiz_generation import generate_quiz
+from scripts.word_meaning import get_meaning
 
 ###  GLOBAL SETTINGS
 language="Spanish"
@@ -47,22 +47,17 @@ async def create_lesson(request: LanguageLessonRequest):
         lesson_response = create_language_lesson(request.lang, request.level)
         # quiz_result = generate_quiz(request.lang, request.level, lesson_response[1])
 
-        node_server_url = "http://localhost:3000/receive-lesson"  # Replace with your Node.js server URL
-        
-        headers = {"Content-Type": "application/json"}
-        response = requests.post(node_server_url, json=lesson_response, headers=headers)
+        return lesson_response
 
         # Check if the request was successful
-        if response.status_code == 200:
-            return {"message": "Lesson data sent successfully!", "data": lesson_response}
-        else:
-            raise HTTPException(status_code=response.status_code, detail="Failed to send data to Node.js server")
+       
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
         
     except Exception as e:
         logger.error(f"Error in create_lesson: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @app.post("/get-meaning")

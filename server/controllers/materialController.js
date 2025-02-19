@@ -4,12 +4,14 @@ class MaterialHandler {
   }
   async createMaterial(req, res) {
     try {
-      const { createdBy, dailyLessons, regularLessons, quizScore } = req.body;
+      const { createdBy, dailyLessons, regularLessons, quizScore, lesson } =
+        req.body;
       const newMaterial = await this.Material.create({
         createdBy,
         dailyLessons,
         regularLessons,
         quizScore,
+        lesson,
       });
 
       const populatedMaterial = await this.Material.findById(

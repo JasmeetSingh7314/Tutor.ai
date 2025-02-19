@@ -6,6 +6,7 @@ const materialSchema = new Schema(
     dailyLessons: [{ type: String }],
     regularLessons: [{ type: String }],
     quizScore: [{ type: String }],
+    lesson: { type: Object },
   },
   { timestamps: true }
 );
