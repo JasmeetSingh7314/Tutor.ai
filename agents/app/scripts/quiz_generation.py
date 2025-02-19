@@ -1,17 +1,17 @@
+import logging
 import os
 import instructor
-from typing import List, Set
-from pydantic import BaseModel,Field, ValidationError
 from openai import OpenAI
 
-## QUIZ CLASSES
-class Questions(BaseModel):
-    ques:str=Field( min_length=5, description="Question used for practice of that word")
-    ans:str=Field(min_length=2,description='Answer to the question i.e the word')
-    options:List[str]=Field(min_length=4,max_length=4,description='Give 4 options to the fill in ques')
+from models.quiz_models import Quiz_Model
 
-class Quiz_Model(BaseModel):
- quiz:List[Questions]
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
+logger=logging.getLogger(__name__)
 
 def generate_quiz_prompt(lang:str,level:str,unique_cards_str:str)->str:
     return f"""
@@ -34,7 +34,10 @@ def generate_quiz_prompt(lang:str,level:str,unique_cards_str:str)->str:
     - Ensure NO REPEATED WORDS OR SENTENCES.
     - Do NOT include Markdown code blocks (e.g., ```json) or any other formatting.
     """
+
 def generate_quiz(lang:str,level:str,unique_cards_str:str):
+    logger.info("Generating quiz")
+
     quiz_client=instructor.patch(
         OpenAI(
             base_url="https://openrouter.ai/api/v1",
@@ -52,19 +55,30 @@ def generate_quiz(lang:str,level:str,unique_cards_str:str):
             {"role": "user", "content": "Generate quiz questions for these words."}
         ],
         temperature=0.1,
-        max_tokens=1000, 
+        max_tokens=2000, 
     )
 
     raw_response=response.choices[0].message.parsed
 
     # Print the raw response to debug
-    print("Raw response:",raw_response)
-    for i in raw_response.quiz:
-        print(i.ques)
-        for index, j in enumerate(i.options, start=1):
-            print(f"{index}. {j}")
-        print(i.ans)
-        print("*******************************************************")
+    logger.info("Quiz generation complete.")
+    # print("Raw response:",raw_response.model_dump())
+
+    # for i in raw_response.quiz:
+    #     print("Question: ",i.ques)
+    #     for index, j in enumerate(i.options, start=1):
+    #         print("OPTION:",{index})
+    #         print(j.word)
+    #         print( j.reading)
+    #         print( j.sentence)
+    #         print( j.translation)
+    #         print("*******")
+    #     print("The answer is: ",i.ans)
+    
+    return raw_response.model_dump()
+    
 
 
-    return raw_response
+
+    
+     
