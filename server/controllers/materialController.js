@@ -5,9 +5,9 @@ class MaterialHandler {
 
   async getMaterial(req, res, id) {
     try {
-      const lessonData = await this.Material.find({ createdBy: id });
+      const lessonData = await this.Material.find({ createdBy: id }).lean();
 
-      const vocab = lessonData.data.lesson.vocab;
+      // const vocab = lessonData.data.lesson.vocab;
       // console.log(lessonData.lesson.vocab);
       res.status(201).json({
         success: true,
