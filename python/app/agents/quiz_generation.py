@@ -13,26 +13,40 @@ logging.basicConfig(
 
 logger=logging.getLogger(__name__)
 
-def generate_quiz_prompt(lang:str,level:str,unique_cards_str:str)->str:
+def generate_quiz_prompt(lang: str, level: str, unique_cards_str: str) -> str:
     return f"""
     You are a {lang} vocabulary teacher. Generate 5 fill-in-the-blank exercises for {level}-level learners.
     - Use the following vocabulary words and sentences:
     {unique_cards_str}
-    - Provide 4 options for each question, including the correct answer.
-    - Return STRICTLY in JSON format with the root key `quiz`.
-    - Example:
-    {{
-    "quiz": [
-        {{
-        "ques": "母は毎晩_______を作ります。",
-        "ans": "料理",
-        "options": ["料理", "消す", "遅い", "電気"]
-        }}
-    ]
-    }}
-    - Never use placeholders like "...".
-    - Ensure NO REPEATED WORDS OR SENTENCES.
-    - Do NOT include Markdown code blocks (e.g., ```json) or any other formatting.
+    
+    **Requirements:**
+    1. For each question:
+       - Provide the original question sentence (`ques`).
+       - Convert the sentence into its **pronunciation/reading form** (e.g., Hiragana for Japanese, Pinyin for Chinese) and store it in `simplified_ques`.
+       - Include a **translation** of the sentence in English (`translation`). Leave the blank as is in the translation.
+       - Provide 4 options for each question, including the correct answer.
+       - Ensure the `ans` field contains the correct answer word.
+    
+    2. Example Structure:
+       {{
+         "ques": "彼は多くの______を持っています。",
+         "simplified_ques": "かれはおおくの______をもっています。",
+         "translation": "He has many ______.",
+         "ans": "努力",
+         "options": [
+           {{"word": "努力", "reading": "どりょく", "meaning": "effort"}},
+           {{"word": "成功", "reading": "せいこう", "meaning": "success"}},
+           {{"word": "経験", "reading": "けいけん", "meaning": "experience"}},
+           {{"word": "知識", "reading": "ちしき", "meaning": "knowledge"}}
+         ]
+       }}
+    
+    3. Additional Rules:
+       - Never repeat words or sentences.
+       - Ensure the translation leaves the blank as is (e.g., "He has many ______.").
+       - Return STRICTLY in JSON format with the root key `quiz`.
+       - Never use placeholders like "...".
+       - Do NOT include Markdown code blocks (e.g., ```json) or any other formatting.
     """
 
 def generate_quiz(lang:str,level:str,unique_cards_str:str):
@@ -41,7 +55,7 @@ def generate_quiz(lang:str,level:str,unique_cards_str:str):
     quiz_client=instructor.patch(
         OpenAI(
             base_url="https://openrouter.ai/api/v1",
-            api_key=os.getenv()
+            api_key=os.getenv("OPEN_ROUTER_KEY_2")
         ),
         mode=instructor.Mode.JSON
     )

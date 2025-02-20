@@ -1,3 +1,5 @@
+// const { pythonResponse } = require("../services/pythonProxy");
+
 class MaterialHandler {
   constructor(materialModel) {
     this.Material = materialModel;
@@ -6,7 +8,7 @@ class MaterialHandler {
   async getMaterial(req, res, id) {
     try {
       const lessonData = await this.Material.find({ createdBy: id }).lean();
-
+      
       // const vocab = lessonData.data.lesson.vocab;
       // console.log(lessonData.lesson.vocab);
       res.status(201).json({
@@ -22,12 +24,24 @@ class MaterialHandler {
     try {
       const { createdBy, dailyLessons, regularLessons, quizScore, lesson } =
         req.body;
+
+      console.log(
+        "Hey!",
+        createdBy,
+        dailyLessons,
+        regularLessons,
+        quizScore,
+        lesson
+      );
+
+      // const generated_lesson = pythonResponse;
+
       const newMaterial = await this.Material.create({
         createdBy,
         dailyLessons,
         regularLessons,
         quizScore,
-        lesson,
+        lesson: lesson,
       });
 
       const populatedMaterial = await this.Material.findById(

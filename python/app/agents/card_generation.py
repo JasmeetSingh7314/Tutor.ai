@@ -5,8 +5,6 @@ from openai import OpenAI
 from models.card_models import VocabularyCards
 from utils.common_functions import deduplicate_cards
 
-
-## LESSON LOGGER
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -74,7 +72,7 @@ def create_language_lesson(lang:str,level:str):
     client=instructor.patch(
         OpenAI(
             base_url="https://openrouter.ai/api/v1",
-            api_key=os.getenv("OPEN_ROUTER_KEY")
+            api_key="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"
         ),
         mode=instructor.Mode.JSON
     )
@@ -92,19 +90,29 @@ def create_language_lesson(lang:str,level:str):
     )
     logger.info("Deck generation completed")
     cards = completion.choices[0].message.parsed
-    print(cards.model_dump())
-    # unique_cards = deduplicate_cards(cards.examples)
     # print(cards.model_dump())
-    # for i in unique_cards:
-    #     print(i.word)
-    #     print(i.reading)
-    #     print(i.sentence)
-    #     print(i.translation)
-    #     print("*******************************************************")
-       # Generate quiz
-    # unique_cards_str = "\n".join(
-    #     f"Word: {card.word}\nReading: {card.reading}\nSentence: {card.sentence}\nTranslation: {card.translation}\n"
-    #     for card in unique_cards
-    # )
-    return cards.model_dump()
 
+
+
+    unique_cards = get_unique_cards(cards.model_dump())
+
+
+    return unique_cards
+
+def get_unique_cards(json_data):
+    """
+    Takes JSON data and returns an array of unique cards based on the 'word' field.
+    """
+    unique_cards = []
+    seen_words = set()  # Track words we've already seen
+
+    # Iterate through each card in the JSON data
+    for card in json_data['vocab']:
+        word = card['word_details']['word']
+        
+        # If the word hasn't been seen, add the card to the unique list
+        if word not in seen_words:
+            unique_cards.append(card)
+            seen_words.add(word)  # Mark the word as seen
+
+    return {"vocab":unique_cards}
