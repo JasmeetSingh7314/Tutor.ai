@@ -5,12 +5,16 @@ class MaterialHandler {
     this.Material = materialModel;
   }
 
-  async getMaterial(req, res, id) {
+  async getMaterial(req, res, id, fieldName) {
     try {
-      const lessonData = await this.Material.find({ createdBy: id }).lean();
-      
-      // const vocab = lessonData.data.lesson.vocab;
-      // console.log(lessonData.lesson.vocab);
+      let projection = {};
+      if (fieldName) {
+        projection[fieldName] = 1; 
+      }
+      const lessonData = await this.Material.find({ createdBy: id })
+        .select(projection)
+        .lean();
+
       res.status(201).json({
         success: true,
         message: "Material successfully fetched",
@@ -22,8 +26,14 @@ class MaterialHandler {
   }
   async createMaterial(req, res) {
     try {
-      const { createdBy, dailyLessons, regularLessons, quizScore, lesson } =
-        req.body;
+      const {
+        createdBy,
+        dailyLessons,
+        regularLessons,
+        quizScore,
+        lesson,
+        quiz,
+      } = req.body;
 
       console.log(
         "Hey!",
@@ -31,7 +41,8 @@ class MaterialHandler {
         dailyLessons,
         regularLessons,
         quizScore,
-        lesson
+        lesson,
+        quiz
       );
 
       // const generated_lesson = pythonResponse;

@@ -84,7 +84,7 @@ async def get_lesson():
         # Hit the Node.js backend endpoint
         async with httpx.AsyncClient() as client:
             # Make a GET request to the backend
-            response = await client.get(f"{NODE_BACKEND_URL}/get-material/{user}")
+            response = await client.get(f"http://localhost:3000/api/material/get-material/67b18930f627f99425bbc8e6")
             logger.info(f"Response from backend: {response.status_code}")
 
             # Raise an exception for HTTP errors (4xx, 5xx)
@@ -108,30 +108,7 @@ async def get_lesson():
         # Handle unexpected errors
         logger.error(f"Unexpected error in get_lesson: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
-# @app.get("/get-lesson")
-# async def get_lesson():
-#     """
-#     Fetch lesson data from the Node.js backend by hitting its endpoint.
-#     """
-#     try:
-#         # Hit the Node.js backend endpoint
-#         async with httpx.AsyncClient() as client:
-#             response = await client.get(f"{NODE_BACKEND_URL}/get-material/67b18930f627f99425bbc8e6")
-#             print(response)
-
-#             # quiz_response=generate_quiz(response.lang,response.level,json.dumps(response.lesson))
-                
-#             response.raise_for_status()  
-        
-#         return response.json()
-    
-#     except httpx.HTTPStatusError as e:
-
-#         raise HTTPException(status_code=e.response.status_code, detail="Error fetching lesson data")
-    
-#     except Exception as e:
-
-#         raise HTTPException(status_code=500, detail=str(e))
+    raise HTTPException(status_code=500, detail=str(e))
   
 @app.post("/get-meaning")
 async def get_meaning_api(request: GetMeaningRequest):
