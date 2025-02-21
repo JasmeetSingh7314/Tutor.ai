@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Moon, Sun, Menu } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 
+
+
 const sampleData = {
   vocab: [
     {
@@ -137,6 +139,9 @@ function App() {
               <Menu className="h-5 w-5" />
             </Button>
           </div>
+        </div>
+        <div>
+          <Button onClick={() => apiCall}>api</Button>
         </div>
       </header>
 
