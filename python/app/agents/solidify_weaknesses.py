@@ -13,4 +13,5 @@ logging.basicConfig(
 
 logger=logging.getLogger(__name__)
 
-def identify_weaknesses
+def identify_weaknesses():
+    return
