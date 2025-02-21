@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { VocabCard } from "@/components/VocabCard";
 import { Drawer } from "@/components/Drawer";
@@ -8,20 +8,34 @@ import { useTheme } from "@/components/ThemeProvider";
 import updateUser from "./apis/users/updateUser";
 import { Button } from "@heroui/react";
 import { sampleData } from "./lib/sampleData";
+import { createLesson } from "./apis/materials/get_lesson";
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const { theme, toggleTheme } = useTheme();
+  const [data, setData] = useState([]);
 
   const handlePrevious = () => {
     setCurrentWordIndex(
-      (prev) => (prev - 1 + sampleData.vocab.length) % sampleData.vocab.length
+      (prev) => (prev - 1 + data?.length) % sampleData.vocab.length
     );
   };
 
   const handleNext = () => {
-    setCurrentWordIndex((prev) => (prev + 1) % sampleData.vocab.length);
+    setCurrentWordIndex((prev) => (prev + 1) % data?.length);
+  };
+
+  const getLesson = async () => {
+    const lessonresponse = await createLesson();
+    // setData(lesson.data.lesson);
+    console.log(
+      lessonresponse,
+      lessonresponse.data,
+      lessonresponse.data.lesson.vocab
+    );
+    setData(lessonresponse.data.vocab);
+    return lessonresponse;
   };
 
   return (
@@ -63,7 +77,7 @@ function App() {
 
       <main className="container mx-auto px-4 py-20">
         <VocabCard
-          word={sampleData.vocab[currentWordIndex]}
+          word={data.length > 1 ? data[currentWordIndex] : sampleData.vocab[0]}
           onPrevious={handlePrevious}
           onNext={handleNext}
         />
@@ -80,11 +94,11 @@ function App() {
           </Button>
           <Button
             variant="ghost"
-            onPress={() => {}}
+            onPress={() => getLesson()}
             color="danger"
             className="rounded-md p-6 "
           >
-            <Menu className="h-5 w-5" /> Mark for Review
+            <Menu className="h-5 w-5" /> Generate Lesson
           </Button>
         </div>
       </main>

@@ -14,8 +14,9 @@ logging.basicConfig(
 logger=logging.getLogger(__name__)
 
 # # Explicit prompt with formatting rules
-def generate_card_prompt(lang: str, level: str) -> str:
-    return f"""You are a {lang} vocabulary teacher. Generate 2 vocabulary cards for {level}-level learners.  
+def generate_card_prompt(lang: str, level: str,knownwords:str) -> str:
+    return f"""You are a {lang} vocabulary teacher. Generate 2 vocabulary cards for {level}-level learners. 
+    -MAKE SURE TO NOT REPEAT THESE WORDS:{knownwords} 
     - Return STRICTLY in JSON format.  
     - Use the appropriate script for the word in sentences (e.g., Kanji for Japanese, Hanzi for Chinese, etc.).  
     - Sentences must use the word naturally.  
@@ -64,7 +65,7 @@ def generate_card_prompt(lang: str, level: str) -> str:
         ]
     }}"""
 
-def create_language_lesson(lang:str,level:str):  
+def create_language_lesson(lang:str,level:str,knownwords):  
     """Function to create the language lesson"""
 
     logger.info("Generating Lesson")
@@ -72,17 +73,17 @@ def create_language_lesson(lang:str,level:str):
     client=instructor.patch(
         OpenAI(
             base_url="https://openrouter.ai/api/v1",
-            api_key=os.getenv('OPEN_ROUTER')
+            api_key=os.getenv('OPEN_ROUTER_KEY')
         ),
         mode=instructor.Mode.JSON
     )
-    card_prompt=generate_card_prompt(lang,level)
+    card_prompt=generate_card_prompt(lang,level,knownwords)
     completion = client.beta.chat.completions.parse(
         model="deepseek/deepseek-chat:free",
         response_format=VocabularyCards,
         messages=[
             {"role": "system", "content": card_prompt},
-            {"role": "user", "content": f"I want to learn {lang} and I want to work on my vocab skills. I am currently at {level} level."}
+            {"role": "user", "content": f"I want to learn {lang} and I want to work on my vocab skills. I am currently at {level} level. Teach me other things i already know {knownwords}"}
         ],
         temperature=0.1,
         max_tokens=3000

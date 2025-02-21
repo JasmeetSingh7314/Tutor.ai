@@ -8,8 +8,10 @@ class MaterialHandler {
   async getMaterial(req, res, id, fieldName) {
     try {
       let projection = {};
+      console.log("FieldName", fieldName);
+      console.log("Id", id);
       if (fieldName) {
-        projection[fieldName] = 1; 
+        projection[fieldName] = 1;
       }
       const lessonData = await this.Material.find({ createdBy: id })
         .select(projection)
@@ -26,33 +28,16 @@ class MaterialHandler {
   }
   async createMaterial(req, res, id) {
     try {
-      const {
-        createdBy,
-        dailyLessons,
-        regularLessons,
-        quizScore,
-        lesson,
-        quiz,
-      } = req.body;
+      const { createdBy, lesson, quiz } = req.body;
 
-      console.log(
-        "Hey!",
-        createdBy,
-        dailyLessons,
-        regularLessons,
-        quizScore,
-        lesson,
-        quiz
-      );
+      console.log("Hey!", createdBy, lesson, quiz);
 
       // const generated_lesson = pythonResponse;
 
       const newMaterial = await this.Material.create({
         createdBy,
-        dailyLessons,
-        regularLessons,
-        quizScore,
         lesson: lesson,
+        quiz: quiz,
       });
 
       const populatedMaterial = await this.Material.findById(

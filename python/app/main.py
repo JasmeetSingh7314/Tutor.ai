@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException
 import logging
 import httpx
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 from agents.card_generation import create_language_lesson
 from agents.quiz_generation import generate_quiz
 from agents.word_meaning import get_meaning
@@ -24,9 +25,21 @@ user_id="67b18930f627f99425bbc8e6"
 # Initialize FastAPI app
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Replace with your React app's URL
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+)
+
+
 class LessonRequest(BaseModel):
-    lang: str
-    level: str
+    user_id:str
+
+@app.options("/create-lesson")
+async def preflight_handler():
+    return {}
 
 
 # API Endpoints
@@ -35,29 +48,39 @@ async def create_lesson(request: LessonRequest):
     """
     Create lesson: Sending lesson data through this proxy.
     """
-    # Initialize lesson response
-    lesson_response = create_language_lesson(request.lang,request.level)
-
     try:
+        # Fetch user data
+        user_response = await get_user()
+        known_words = user_response['data']['knownWords']
+        target_language = user_response['data']['targetLanguage']
+        prior_experience = user_response['data']['priorExperience']
+        
+        
+        print(known_words,target_language,prior_experience)
+        # Create lesson
+        lesson_response = create_language_lesson(target_language, prior_experience, " ".join(known_words))
+
+        # Prepare final JSON
+        final_json = {
+            "createdBy": request.user_id,
+            "lesson": lesson_response,
+            "quiz": {}
+        }
+
         # Hit the Node.js backend endpoint
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 f"{NODE_BACKEND_URL}/create-material",
-                json=lesson_response  # Pass the object as JSON
+                json=final_json
             )
-            response.raise_for_status()  # Raise an exception for HTTP errors
+            response.raise_for_status()
             logger.info("Material created successfully.")
 
-    except httpx.HTTPStatusError as e:
-        logger.error(f"HTTP error while creating material: {e}")
-        raise HTTPException(status_code=e.response.status_code, detail="Error fetching lesson data")
+        return {"message": "Lesson created successfully", "data": final_json}
 
     except Exception as e:
         logger.error(f"Unexpected error in create_lesson: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
-    return {"message": "Lesson created successfully", "data": lesson_response}
-
 
 @app.post("/create-quiz")
 async def create_quiz(request:GenerateQuizRequest):
@@ -98,12 +121,44 @@ async def get_lesson():
     """
     Fetch lesson data from the Node.js backend by hitting its endpoint.
     """
-    user="67b18930f627f99425bbc8e6"
+    user="67b8897d52639ae91ec00343"
     try:
         # Hit the Node.js backend endpoint
         async with httpx.AsyncClient() as client:
 
-            response = await client.get(f"http://localhost:3000/api/material/get-material/67b18930f627f99425bbc8e6")
+            response = await client.get(f"http://localhost:3000/api/material/get-material/67b89d892178a8e71885c07f?fieldName=lesson")
+            logger.info(f"Response from backend: {response.status_code}")
+
+            response.raise_for_status()
+
+            lesson_data = response.json()
+            logger.info("Successfully fetched lesson data from the backend.")
+
+
+            return lesson_data 
+
+    except httpx.HTTPStatusError as e:
+        # Handle HTTP errors (e.g., 4xx, 5xx)
+        logger.error(f"HTTP error while fetching lesson data: {e}")
+        raise HTTPException(status_code=e.response.status_code, detail="Error fetching lesson data from the backend")
+
+    except Exception as e:
+        # Handle unexpected errors
+        logger.error(f"Unexpected error in get_lesson: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+    
+@app.get("/get-user")
+async def get_user():
+    """
+    Fetch lesson data from the Node.js backend by hitting its endpoint.
+    """
+    user="67b8897d52639ae91ec00343"
+    try:
+        # Hit the Node.js backend endpoint
+        async with httpx.AsyncClient() as client:
+
+            response = await client.get(f"http://localhost:3000/api/users/get-user/67b89d892178a8e71885c07f")
             logger.info(f"Response from backend: {response.status_code}")
 
             response.raise_for_status()
@@ -124,6 +179,7 @@ async def get_lesson():
         logger.error(f"Unexpected error in get_lesson: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
 @app.post("/get-meaning")
 async def get_meaning_api(request: GetMeaningRequest):
     try:
@@ -136,7 +192,7 @@ async def get_meaning_api(request: GetMeaningRequest):
 # Run the app
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, port=8000)
 
 # get_string=create_language_lesson(language,level)
 
@@ -145,4 +201,40 @@ if __name__ == "__main__":
 # get_meaning(language,"旅行")
 
 
+
+# @app.post("/create-lesson")
+# async def create_lesson(request: LessonRequest):
+#     """
+#     Create lesson: Sending lesson data through this proxy.
+#     """
+#     # Initialize lesson response
+    
+#     user_response=await get_user()
+#     print(user_response['data']['knownWords'],user_response['data']['targetLanguage'],user_response['data']['priorExperience'])
+#     print(request.user_id)
+#     known_words=user_response['data']['knownWords']
+    # lesson_response = create_language_lesson(user_response['data']['target_language'],user_response['data']['priorExperience']," ".join(known_words))
+     
+    # final_json={ 
+    #             "createdBy":{request.user_id},
+    #              "lesson":lesson_response,
+    #               "quiz":{}
+                    
+    # }
+
+    # try:
+    #     # Hit the Node.js backend endpoint
+    #     async with httpx.AsyncClient() as client:
+    #         response = await client.post(
+    #             f"{NODE_BACKEND_URL}/create-material",
+    #             json=final_json # Pass the object as JSON
+    #         )
+    #         response.raise_for_status()  # Raise an exception for HTTP errors
+    #         logger.info("Material created successfully.")
+
+    # except Exception as e:
+    #     logger.error(f"Unexpected error in create_lesson: {e}")
+    #     raise HTTPException(status_code=500, detail=str(e))
+
+    # return {"message": "Lesson created successfully", "data":{} }
 

@@ -1,8 +1,7 @@
-import * as React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { ChevronRight, Trophy, Star, BarChart } from 'lucide-react';
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ChevronRight, Trophy, Star, BarChart } from "lucide-react";
 
 interface DrawerProps {
   isOpen: boolean;
@@ -22,10 +21,10 @@ export function Drawer({ isOpen, onClose }: DrawerProps) {
             onClick={onClose}
           />
           <motion.div
-            initial={{ x: '100%' }}
+            initial={{ x: "100%" }}
             animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 20 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 20 }}
             className="fixed right-0 top-0 h-full w-80 bg-card border-l border-border z-50"
           >
             <div className="flex items-center justify-between p-4 border-b">
@@ -34,7 +33,7 @@ export function Drawer({ isOpen, onClose }: DrawerProps) {
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
-            
+
             <ScrollArea className="h-[calc(100vh-4rem)] p-4">
               <div className="space-y-6">
                 <section>
@@ -43,7 +42,12 @@ export function Drawer({ isOpen, onClose }: DrawerProps) {
                     <h3 className="font-semibold">Achievements</h3>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    {['Beginner', 'Quick Learner', '7-Day Streak', 'Perfect Score'].map((achievement) => (
+                    {[
+                      "Beginner",
+                      "Quick Learner",
+                      "7-Day Streak",
+                      "Perfect Score",
+                    ].map((achievement) => (
                       <div
                         key={achievement}
                         className="p-3 rounded-lg bg-muted/50 text-center"
@@ -54,7 +58,7 @@ export function Drawer({ isOpen, onClose }: DrawerProps) {
                     ))}
                   </div>
                 </section>
-                
+
                 <section>
                   <div className="flex items-center gap-2 mb-3">
                     <BarChart className="h-5 w-5 text-primary" />
@@ -62,10 +66,10 @@ export function Drawer({ isOpen, onClose }: DrawerProps) {
                   </div>
                   <div className="space-y-3">
                     {[
-                      { label: 'Words Learned', value: '120' },
-                      { label: 'Daily Streak', value: '7 days' },
-                      { label: 'Accuracy', value: '92%' },
-                      { label: 'Time Spent', value: '5.2 hours' },
+                      { label: "Words Learned", value: "120" },
+                      { label: "Daily Streak", value: "7 days" },
+                      { label: "Accuracy", value: "92%" },
+                      { label: "Time Spent", value: "5.2 hours" },
                     ].map((stat) => (
                       <div
                         key={stat.label}
