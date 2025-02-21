@@ -51,18 +51,25 @@ class UserHandler {
     }
   }
 
-  async updateUser(req, res) {
+  async updateUser(req, res,fieldName) {
     try {
       const id = req.params.id;
       const { profileImage, reviewWords, knownWords, weaknesses } = req.body;
 
+      let projection = {};
+      if (fieldName) {
+        projection[fieldName] = 1; 
+      }
+      const userData = await this.Material.findByIdAndUpdate(id,{
+        
+      })
+        .select(projection)
+        .lean();
+
       const updatedUser = await this.User.findByIdAndUpdate(
         id,
         {
-          profileImage,
-          reviewWords,
-          knownWords,
-          weaknesses,
+         fieldName:
         }
         // (error, updatedUser) => {
         //   if (error) {

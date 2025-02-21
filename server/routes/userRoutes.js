@@ -11,5 +11,7 @@ router.post("/create-user", (req, res) => {
 });
 router.post("/update-user/:id", (req, res) => {
   handler.updateUser(req, res);
+  const fieldName = req.query.fieldName;
+  handler.getMaterial(req, res, id, fieldName);
 });
 module.exports = router;
