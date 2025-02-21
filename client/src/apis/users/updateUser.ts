@@ -1,6 +1,5 @@
 import { sampleData } from "../../lib/sampleData";
 export default function updateUser(field: string) {
-
   // Updating the known_words
   let knownWords: string[] = [];
   if (field === "knownWords") {
@@ -10,7 +9,7 @@ export default function updateUser(field: string) {
   }
 
   console.log(knownWords);
-  
+
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
@@ -26,14 +25,14 @@ export default function updateUser(field: string) {
   });
 
   const requestOptions: any = {
-    method: "POST",
+    method: "PUT",
     headers: myHeaders,
     body: raw,
     redirect: "follow",
   };
 
   fetch(
-    "http://localhost:3000/api/users/update-user/67b742bb08ae429a5ca02a8d",
+    "http://localhost:3000/api/users/update-user/67b1882de909cc845ae3257d",
     requestOptions
   )
     .then((response) => response.text())

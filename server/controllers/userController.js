@@ -51,34 +51,33 @@ class UserHandler {
     }
   }
 
-  async updateUser(req, res,fieldName) {
+  async getUserDetails(req, res) {
+    try {
+      const id = req.params.id;
+      console.log(id);
+      const userData = await this.User.findById(id);
+      console.log(userData);
+      res.status(200).json({
+        success: true,
+        message: "User data fetched successfully",
+        data: userData,
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
+
+  async updateUser(req, res) {
     try {
       const id = req.params.id;
       const { profileImage, reviewWords, knownWords, weaknesses } = req.body;
 
-      let projection = {};
-      if (fieldName) {
-        projection[fieldName] = 1; 
-      }
-      const userData = await this.Material.findByIdAndUpdate(id,{
-        
-      })
-        .select(projection)
-        .lean();
-
-      const updatedUser = await this.User.findByIdAndUpdate(
-        id,
-        {
-         fieldName:
-        }
-        // (error, updatedUser) => {
-        //   if (error) {
-        //     console.log("error updating user", err);
-        //   } else {
-        //     console.log("Updated user:", updatedUser);
-        //   }
-        // }
-      );
+      const updatedUser = await this.User.findByIdAndUpdate(id, {
+        profileImage: profileImage,
+        reviewWords: reviewWords,
+        knownWords: knownWords,
+        weaknesses: weaknesses,
+      });
       res.status(201).json({
         success: true,
         message: "User updated successfully",

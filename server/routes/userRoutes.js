@@ -9,9 +9,11 @@ const handler = new UserHandler(User);
 router.post("/create-user", (req, res) => {
   handler.createUser(req, res);
 });
-router.post("/update-user/:id", (req, res) => {
+router.put("/update-user/:id", (req, res) => {
   handler.updateUser(req, res);
-  const fieldName = req.query.fieldName;
-  handler.getMaterial(req, res, id, fieldName);
+});
+
+router.get("/get-user/:id", (req, res) => {
+  handler.getUserDetails(req, res);
 });
 module.exports = router;
