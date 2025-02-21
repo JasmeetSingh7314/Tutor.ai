@@ -73,7 +73,7 @@ def create_language_lesson(lang:str,level:str,knownwords):
     client=instructor.patch(
         OpenAI(
             base_url="https://openrouter.ai/api/v1",
-            api_key=os.getenv('OPEN_ROUTER_KEY')
+            api_key="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"
         ),
         mode=instructor.Mode.JSON
     )

@@ -15,29 +15,32 @@ function App() {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const { theme, toggleTheme } = useTheme();
   const [data, setData] = useState([]);
+  const [toggle, setToggle] = useState(true);
 
   const handlePrevious = () => {
-    setCurrentWordIndex(
-      (prev) => (prev - 1 + data?.length) % sampleData.vocab.length
-    );
+    setCurrentWordIndex((prev) => (prev - 1 + data?.length) % data.length);
   };
 
   const handleNext = () => {
     setCurrentWordIndex((prev) => (prev + 1) % data?.length);
   };
 
-  const getLesson = async () => {
-    const lessonresponse = await createLesson();
-    // setData(lesson.data.lesson);
-    console.log(
-      lessonresponse,
-      lessonresponse.data,
-      lessonresponse.data.lesson.vocab
-    );
-    setData(lessonresponse.data.vocab);
-    return lessonresponse;
+  useEffect(() => {
+    const getLesson = async () => {
+      const lessonResponse = await createLesson();
+
+      console.log(lessonResponse?.vocab);
+      setData(lessonResponse?.vocab);
+    };
+    getLesson();
+    console.log("abcd");
+  }, [toggle]);
+
+  const setAlco = async () => {
+    setToggle(!toggle);
   };
 
+  console.log(data);
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg bg-background/80 border-b border-border">
@@ -77,10 +80,11 @@ function App() {
 
       <main className="container mx-auto px-4 py-20">
         <VocabCard
-          word={data.length > 1 ? data[currentWordIndex] : sampleData.vocab[0]}
+          word={data.length > 1 ? data[currentWordIndex] : data[0]}
           onPrevious={handlePrevious}
           onNext={handleNext}
         />
+
         <div className="flex justify-center items-center gap-x-5">
           <Button
             variant="ghost"
@@ -94,7 +98,7 @@ function App() {
           </Button>
           <Button
             variant="ghost"
-            onPress={() => getLesson()}
+            onPress={() => setAlco()}
             color="danger"
             className="rounded-md p-6 "
           >

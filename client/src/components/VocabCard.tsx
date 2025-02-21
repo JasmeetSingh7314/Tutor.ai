@@ -18,6 +18,7 @@ import {
 interface VocabCardProps {
   word: VocabWord;
   className?: string;
+
   onPrevious?: () => void;
   onNext?: () => void;
 }
