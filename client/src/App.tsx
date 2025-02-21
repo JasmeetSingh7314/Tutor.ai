@@ -7,7 +7,6 @@ import { Moon, Sun, Menu } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import updateUser from "./apis/users/updateUser";
 import { Button } from "@heroui/react";
-import { sampleData } from "./lib/sampleData";
 import { createLesson } from "./apis/materials/get_lesson";
 
 function App() {
@@ -29,18 +28,16 @@ function App() {
     const getLesson = async () => {
       const lessonResponse = await createLesson();
 
-      console.log(lessonResponse?.vocab);
-      setData(lessonResponse?.vocab);
+      console.log(lessonResponse.data.lesson.vocab);
+      setData(lessonResponse.data.lesson.vocab);
     };
     getLesson();
-    console.log("abcd");
   }, [toggle]);
 
   const setAlco = async () => {
     setToggle(!toggle);
   };
 
-  console.log(data);
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg bg-background/80 border-b border-border">
@@ -80,7 +77,7 @@ function App() {
 
       <main className="container mx-auto px-4 py-20">
         <VocabCard
-          word={data.length > 1 ? data[currentWordIndex] : data[0]}
+          word={data[currentWordIndex]}
           onPrevious={handlePrevious}
           onNext={handleNext}
         />

@@ -80,19 +80,19 @@ export function VocabCard({
 
             {/* Main Word Section */}
             <h2 className="text-8xl font-bold text-primary mb-4">
-              {word.word_details.word}
+              {word?.word_details.word}
             </h2>
             <div className="flex items-center justify-center gap-4 mb-6">
               <span className="text-3xl text-muted-foreground">
-                {word.word_details.reading}
+                {word?.word_details.reading}
               </span>
               <Button variant="ghost" className="rounded-full">
                 <Volume2 className="w-6 h-6" />
               </Button>
             </div>
-            <p className="text-2xl">{word.word_details.meaning}</p>
+            <p className="text-2xl">{word?.word_details.meaning}</p>
             <p className="text-lg text-muted-foreground mt-2 mb-8">
-              {word.word_details.literal_meaning}
+              {word?.word_details.literal_meaning}
             </p>
 
             {/* Mini Cards Container */}
@@ -104,13 +104,13 @@ export function VocabCard({
                   <h3 className="font-semibold">Components</h3>
                 </div>
                 <div className="space-y-3 flex flex-col">
-                  {word.word_details.components.map((component, i) => (
+                  {word?.word_details.components.map((component, i) => (
                     <div key={i} className="p-3 rounded-lg bg-secondary/30">
                       <span className="text-xl font-semibold block mb-1">
                         {component}
                       </span>
                       <span className="text-sm text-primary">
-                        {word.word_details.component_meanings[i]}
+                        {word?.word_details.component_meanings[i]}
                       </span>
                     </div>
                   ))}
@@ -123,9 +123,11 @@ export function VocabCard({
                   <SpeakerHigh className="w-5 h-5 text-primary" />
                   <h3 className="font-semibold">Pronunciation</h3>
                 </div>
-                <p className="text-sm mb-3">{word.pronunciation_guide.guide}</p>
+                <p className="text-sm mb-3">
+                  {word?.pronunciation_guide.guide}
+                </p>
                 <p className="text-sm text-muted-foreground">
-                  {word.pronunciation_guide.tips}
+                  {word?.pronunciation_guide.tips}
                 </p>
               </MiniCard>
 
@@ -136,7 +138,7 @@ export function VocabCard({
                   <h3 className="font-semibold">Examples</h3>
                 </div>
                 <div className="space-y-3 flex flex-col">
-                  {word.usage_examples.examples.map((example, i) => (
+                  {word?.usage_examples.examples.map((example, i) => (
                     <p key={i} className="text-sm">
                       {example}
                     </p>
@@ -150,9 +152,9 @@ export function VocabCard({
                   <Pencil className="w-5 h-5 text-primary" />
                   <h3 className="font-semibold">Writing Guide</h3>
                 </div>
-                <p className="text-sm mb-3">{word.writing_guide.guide}</p>
+                <p className="text-sm mb-3">{word?.writing_guide.guide}</p>
                 <p className="text-sm text-muted-foreground">
-                  {word.writing_guide.tips}
+                  {word?.writing_guide.tips}
                 </p>
               </MiniCard>
 
@@ -163,7 +165,7 @@ export function VocabCard({
                   <h3 className="font-semibold">Variations</h3>
                 </div>
                 <div className="space-y-2 flex flex-col">
-                  {word.variations.variations.map((variation, i) => (
+                  {word?.variations.variations.map((variation, i) => (
                     <div
                       key={i}
                       className="p-2 rounded-lg bg-secondary/30 text-sm text-center"
@@ -181,17 +183,17 @@ export function VocabCard({
                   <h3 className="font-semibold">Cultural Context</h3>
                 </div>
                 <p className="text-sm mb-4 leading-relaxed">
-                  {word.cultural_note.note}
+                  {word?.cultural_note.note}
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 rounded-lg bg-secondary/30">
                     <h4 className="text-xs text-primary mb-1">Formal</h4>
-                    <p className="text-sm">{word.formal_vs_informal.formal}</p>
+                    <p className="text-sm">{word?.formal_vs_informal.formal}</p>
                   </div>
                   <div className="p-3 rounded-lg bg-secondary/30">
                     <h4 className="text-xs text-primary mb-1">Informal</h4>
                     <p className="text-sm">
-                      {word.formal_vs_informal.informal}
+                      {word?.formal_vs_informal.informal}
                     </p>
                   </div>
                 </div>
