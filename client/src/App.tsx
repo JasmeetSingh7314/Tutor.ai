@@ -87,7 +87,7 @@ function App() {
             variant="ghost"
             color="warning"
             onPress={() => {
-              updateUser("knownWords");
+              updateUser("knownWords", data);
             }}
             className="rounded-md p-6"
           >

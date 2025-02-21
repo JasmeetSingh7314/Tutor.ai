@@ -15,7 +15,7 @@ logger=logging.getLogger(__name__)
 
 # # Explicit prompt with formatting rules
 def generate_card_prompt(lang: str, level: str,knownwords:str) -> str:
-    return f"""You are a {lang} vocabulary teacher. Generate 2 vocabulary cards for {level}-level learners. 
+    return f"""You are a {lang} vocabulary teacher. Generate 5 vocabulary cards for {level}-level learners. 
     -MAKE SURE TO NOT REPEAT THESE WORDS:{knownwords} 
     - Return STRICTLY in JSON format.  
     - Use the appropriate script for the word in sentences (e.g., Kanji for Japanese, Hanzi for Chinese, etc.).  

@@ -1,14 +1,11 @@
-import { sampleData } from "../../lib/sampleData";
-export default function updateUser(field: string) {
+export default function updateUser(field: string, currentWords: any[]) {
   // Updating the known_words
   let knownWords: string[] = [];
   if (field === "knownWords") {
-    knownWords = sampleData.vocab.map(
-      (element: any) => element.word_details.word
-    );
+    knownWords = currentWords.map((element: any) => element.word_details.word);
   }
 
-  console.log(knownWords);
+  console.log(knownWords, currentWords);
 
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
@@ -32,7 +29,7 @@ export default function updateUser(field: string) {
   };
 
   fetch(
-    "http://localhost:3000/api/users/update-user/67b1882de909cc845ae3257d",
+    "http://localhost:3000/api/users/update-user/67b89d892178a8e71885c07f",
     requestOptions
   )
     .then((response) => response.text())
