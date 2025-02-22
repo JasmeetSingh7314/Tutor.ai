@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Sidebar from "../components/Dashboard/Sidebar";
 import LanguageProgress from "../components/Dashboard/LanguageProgress";
@@ -6,6 +6,7 @@ import { Brain, Sparkles, Globe } from "lucide-react";
 import type { Language, UserProgress } from "../lib/types";
 import { Navbar } from "../components/Navbar";
 import Footer from "@/components/Footer";
+import getUser from "@/apis/users/getUser";
 
 const mockLanguages: any[] = [
   { name: "Spanish", progress: 65, wordsLearned: 500, level: 4 },
@@ -23,8 +24,17 @@ const mockProgress: UserProgress = {
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState("lessons");
   const [isLoaded, setIsLoaded] = useState(false);
+  const [userData, setUserData] = useState();
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const getUserData = async () => {
+      const user = await getUser(localStorage.getItem("userId"));
+      console.log(user.data);
+      setUserData(user.data);
+
+      localStorage.setItem("userDetails", JSON.stringify(user.data));
+    };
+    getUserData();
     setIsLoaded(true);
   }, []);
 

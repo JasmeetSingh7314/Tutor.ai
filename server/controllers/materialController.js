@@ -34,6 +34,13 @@ class MaterialHandler {
 
       // const generated_lesson = pythonResponse;
 
+      checkExistingMaterial = await this.Material.findById(id);
+      if (checkExistingMaterial && quiz !== "{}") {
+        const appendMaterial = await this.Material.findByIdAndUpdate(id, {
+          $push: { lesson: lesson },
+        });
+      }
+
       const newMaterial = await this.Material.create({
         createdBy,
         lesson: lesson,

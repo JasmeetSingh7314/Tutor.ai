@@ -1,4 +1,4 @@
-import { createLesson } from "@/apis/materials/get_lesson";
+import { createLesson } from "@/apis/materials/createLesson";
 import { VocabCard } from "@/components/lesson/VocabCard";
 import { Button } from "@heroui/react";
 import { Menu } from "lucide-react";

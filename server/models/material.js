@@ -4,8 +4,8 @@ const materialSchema = new Schema(
   {
     createdBy: { type: Schema.Types.ObjectId, ref: "users" },
 
-    lesson: { type: Object },
-    quiz:{ type: Object },
+    lesson: [{ type: Object }],
+    quiz: [{ type: Object }],
   },
   { timestamps: true }
 );
