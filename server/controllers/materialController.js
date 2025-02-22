@@ -26,18 +26,70 @@ class MaterialHandler {
       res.status(500).json({ success: false, message: error.message });
     }
   }
+  // async createMaterial(req, res, id) {
+  //   try {
+  //     const { createdBy, lesson, quiz } = req.body;
+
+  //     console.log("Hey!", createdBy, lesson, quiz);
+
+  //     const checkExistingMaterial = await this.Material.findById(id);
+
+  //     const newMaterial = await this.Material.create({
+  //       createdBy,
+  //       lesson: lesson,
+  //       quiz: quiz,
+  //     });
+
+  //     const populatedMaterial = await this.Material.findById(
+  //       newMaterial._id
+  //     ).populate("createdBy", "fullName email walletAddress profileImage");
+  //     res.status(201).json({
+  //       success: true,
+  //       message: "Material created successfully",
+  //       data: populatedMaterial,
+  //     });
+  //   } catch (error) {
+  //     res.status(500).json({ success: false, message: error.message });
+  //   }
+  // }
   async createMaterial(req, res, id) {
     try {
       const { createdBy, lesson, quiz } = req.body;
 
       console.log("Hey!", createdBy, lesson, quiz);
 
-      // const generated_lesson = pythonResponse;
+      const checkExistingMaterial = await this.Material.findById(id);
 
-      checkExistingMaterial = await this.Material.findById(id);
-      if (checkExistingMaterial && quiz !== "{}") {
-        const appendMaterial = await this.Material.findByIdAndUpdate(id, {
-          $push: { lesson: lesson },
+      if (checkExistingMaterial) {
+        if (Array.isArray(lesson) && lesson.length > 0) {
+          await this.Material.findByIdAndUpdate(
+            id,
+            {
+              $push: { lesson: { $each: lesson } },
+            },
+            { new: true }
+          );
+        }
+
+        if (Array.isArray(quiz) && quiz.length > 0) {
+          await this.Material.findByIdAndUpdate(
+            id,
+            {
+              $push: { quiz: { $each: quiz } },
+            },
+            { new: true }
+          );
+        }
+
+        const updatedMaterial = await this.Material.findById(id).populate(
+          "createdBy",
+          "fullName email walletAddress profileImage"
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Material updated successfully",
+          data: updatedMaterial,
         });
       }
 
@@ -50,6 +102,7 @@ class MaterialHandler {
       const populatedMaterial = await this.Material.findById(
         newMaterial._id
       ).populate("createdBy", "fullName email walletAddress profileImage");
+
       res.status(201).json({
         success: true,
         message: "Material created successfully",
