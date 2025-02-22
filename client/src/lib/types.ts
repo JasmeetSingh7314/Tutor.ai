@@ -105,3 +105,22 @@ export interface UserProgress {
   currentLevel: number;
   streak: number;
 }
+export interface QuizOption {
+  word: string;
+  reading: string;
+  meaning: string;
+}
+
+export interface QuizQuestion {
+  ques: string;
+  simplified_ques: string;
+  translation: string;
+  ans: string;
+  options: QuizOption[];
+}
+
+export interface QuizAnswer {
+  questionIndex: number;
+  selectedAnswer: string;
+  isCorrect: boolean;
+}

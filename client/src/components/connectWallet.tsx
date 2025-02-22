@@ -13,7 +13,7 @@ import {
 export const ConnectWallet = () => {
   const [account, setAccount] = useState<string | undefined>();
   const [user, setUser] = useState<string | undefined>();
-  const { sdk, connected, connecting, provider, chainId } = useSDK();
+  const { sdk, connected } = useSDK();
   const navigate = useNavigate();
 
   useEffect(() => {

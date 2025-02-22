@@ -6,6 +6,7 @@ import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import { Navbar } from "@heroui/react";
 import { ProtectedRoutes } from "./components/ProtectedRoute";
+import QuizPage from "./pages/QuizPage";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<Home />} />
 
         <Route path="/lesson" element={<Lesson />} />
+        <Route path="/quiz" element={<QuizPage />} />
         <Route path="/sign-up" element={<Onboarding />} />
 
         <Route

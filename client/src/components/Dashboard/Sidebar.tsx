@@ -19,7 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const tabs = [
     { id: "lessons", icon: Book, label: "Lessons", link: "/lesson" },
     { id: "progress", icon: Brain, label: "Progress", link: "" },
-    { id: "quizzes", icon: Star, label: "Quizzes", link: "" },
+    { id: "quizzes", icon: Star, label: "Quizzes", link: "/quiz" },
     {
       id: "achievements",
       icon: Trophy,
