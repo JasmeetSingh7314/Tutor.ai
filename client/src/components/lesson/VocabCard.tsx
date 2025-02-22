@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { VocabWord } from "../lib/types";
+import { VocabWord } from "../../lib/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@heroui/react";
 import { cn } from "@/lib/utils";

@@ -50,13 +50,13 @@ async def create_lesson(request: LessonRequest):
     """
     try:
         # Fetch user data
-        user_response = await get_user()
+        user_response = await get_user(request.user_id)
         known_words = user_response['data']['knownWords']
         target_language = user_response['data']['targetLanguage']
         prior_experience = user_response['data']['priorExperience']
         
         
-        print(known_words,target_language,prior_experience)
+        print(known_words,target_language,prior_experience,user_id)
         # Create lesson
         lesson_response = create_language_lesson(target_language, prior_experience, " ".join(known_words))
 
@@ -151,18 +151,20 @@ async def get_lesson():
         logger.error(f"Unexpected error in get_lesson: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
     
+   
+
     
 @app.get("/get-user")
-async def get_user():
+async def get_user(user_id):
     """
     Fetch lesson data from the Node.js backend by hitting its endpoint.
     """
-    user="67b8897d52639ae91ec00343"
     try:
+        print(user_id)
         # Hit the Node.js backend endpoint
         async with httpx.AsyncClient() as client:
 
-            response = await client.get(f"http://localhost:3000/api/users/get-user/67b89d892178a8e71885c07f")
+            response = await client.get(f"http://localhost:3000/api/users/get-user/{user_id}")
             logger.info(f"Response from backend: {response.status_code}")
 
             response.raise_for_status()

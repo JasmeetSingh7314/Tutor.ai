@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { Button } from "./ui/Button";
+import { ConnectWallet } from "./connectWallet";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,9 +18,9 @@ export const Navbar = () => {
   });
 
   const navItems = [
-    { name: "Features", href: "#features" },
-    { name: "About", href: "#about" },
-    { name: "Pricing", href: "#pricing" },
+    { name: "features", href: "#features" },
+    { name: "about", href: "#about" },
+    { name: "pricing", href: "#pricing" },
   ];
 
   return (
@@ -29,14 +29,16 @@ export const Navbar = () => {
         visible: { y: 0 },
         hidden: { y: -100 },
       }}
-      
-      className="fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10"
+      className="  fixed p-8 top-0 left-0 right-0 z-50 bg-gray-200/5 border-[#959595] border-opacity-20 backdrop-blur-lg border-b border-white/10 py-3"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <a href="/" className="text-[#00FF94] text-2xl font-bold">
-              Tutor AI
+            <a
+              href="/"
+              className="text-[#22B357] text-3xl font-semibold tracking-wider font-playwrite"
+            >
+              Tutor.ai
             </a>
           </div>
 
@@ -46,12 +48,10 @@ export const Navbar = () => {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="text-gray-300 hover:text-[#00FF94] transition-colors"
-                >
-                  {item.name}
-                </a>
+                  className="text-gray-300 hover:text-[#22B357] transition-colors"
+                ></a>
               ))}
-              <Button>Connect Wallet</Button>
+              <ConnectWallet />
             </div>
           </div>
 
@@ -84,7 +84,7 @@ export const Navbar = () => {
                 {item.name}
               </a>
             ))}
-            <Button className="w-full mt-4">Connect Wallet</Button>
+            <ConnectWallet />
           </div>
         </motion.div>
       )}

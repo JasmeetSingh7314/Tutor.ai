@@ -23,7 +23,7 @@ class UserHandler {
       });
 
       if (existingUser) {
-        return res.status(400).json({
+        return res.status(201).json({
           success: false,
           message: "User already exists",
           data: existingUser,
@@ -70,9 +70,33 @@ class UserHandler {
   async updateUser(req, res) {
     try {
       const id = req.params.id;
-      const { profileImage, reviewWords, knownWords, weaknesses } = req.body;
-
+      const {
+        fullName,
+        email,
+        targetLanguage,
+        nativeLanguage,
+        priorExperience,
+        preference,
+        profileImage,
+        reviewWords,
+        knownWords,
+        weaknesses,
+      } = req.body;
+      console.log(
+        fullName,
+        email,
+        targetLanguage,
+        nativeLanguage,
+        priorExperience,
+        preference
+      );
       const updatedUser = await this.User.findByIdAndUpdate(id, {
+        fullName: fullName,
+        email: email,
+        targetLanguage: targetLanguage,
+        nativeLanguage: nativeLanguage,
+        priorExperience: priorExperience,
+        preference: preference,
         profileImage: profileImage,
         reviewWords: reviewWords,
         knownWords: knownWords,

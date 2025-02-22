@@ -15,6 +15,13 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      fontFamily: {
+        playwrite: ["Playwrite AU SA", "serif"],
+        nunito: ["Nunito", "serif"],
+        urbanist: ["Urbanist", "serif"],
+        tiempos: ["Tiempos", "serif"],
+        montserrat: ["Montserrat", "serif"],
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

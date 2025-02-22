@@ -1,6 +1,6 @@
-export const createLesson = async () => {
-  const user_id = "67b1882de909cc845ae3257d";
+export const createLesson = async (user_id: string) => {
   try {
+    console.log(user_id);
     const response = await fetch("http://localhost:8000/create-lesson", {
       method: "POST",
       headers: {

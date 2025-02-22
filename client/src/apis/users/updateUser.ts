@@ -1,25 +1,14 @@
-export default function updateUser(field: string, currentWords: any[]) {
+export default async function updateUser(
+  userId: string | undefined,
+  data: any
+) {
   // Updating the known_words
-  let knownWords: string[] = [];
-  if (field === "knownWords") {
-    knownWords = currentWords.map((element: any) => element.word_details.word);
-  }
 
-  console.log(knownWords, currentWords);
-
+  console.log(userId, data);
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
-  const raw = JSON.stringify({
-    profileImage: "./updated",
-    reviewWords: ["突破とっぱ", "先走さきばしる", "防衛ぼうえい"],
-    knownWords: knownWords,
-    weaknesses: [
-      {
-        vocab: "you need to work on your vocab",
-      },
-    ],
-  });
+  const raw = JSON.stringify(data);
 
   const requestOptions: any = {
     method: "PUT",
@@ -28,11 +17,12 @@ export default function updateUser(field: string, currentWords: any[]) {
     redirect: "follow",
   };
 
-  fetch(
-    "http://localhost:3000/api/users/update-user/67b89d892178a8e71885c07f",
+  const response = await fetch(
+    `http://localhost:3000/api/users/update-user/${userId}`,
     requestOptions
-  )
-    .then((response) => response.text())
-    .then((result) => console.log(result))
-    .catch((error) => console.error(error));
+  );
+
+  const result = await response.json();
+  console.log(result);
+  return result;
 }
