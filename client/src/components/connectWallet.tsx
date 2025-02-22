@@ -12,8 +12,7 @@ import {
 
 export const ConnectWallet = () => {
   const [account, setAccount] = useState<string | undefined>();
-  const [user, setUser] = useState<string | undefined>();
-  const { sdk, connected } = useSDK();
+  const { sdk } = useSDK();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,7 +23,6 @@ export const ConnectWallet = () => {
 
         if (userdetails?.data?._id) {
           const userId = userdetails.data._id;
-          setUser(userId);
           localStorage.setItem("userId", userId);
 
           if (userdetails.message === "User already exists") {
@@ -79,7 +77,7 @@ export const ConnectWallet = () => {
                 className="bg-[white] rounded-md text-black m-10"
               >
                 <span>
-                  {localStorage.getItem("walletAddress").slice(0, 10) + "..."}
+                  {localStorage.getItem("walletAddress")?.slice(0, 10) + "..."}
                 </span>
               </Button>
             </DropdownTrigger>

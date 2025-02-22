@@ -59,7 +59,7 @@ const Lesson = () => {
               variant="ghost"
               color="warning"
               onPress={() => {
-                updateWords(userId, "knownWords", data);
+                updateWords(userId, data);
               }}
               className="rounded-md p-6"
             >

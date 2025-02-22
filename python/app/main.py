@@ -64,7 +64,6 @@ async def create_lesson(request: LessonRequest):
         final_json = {
             "createdBy": request.user_id,
             "lesson": lesson_response,
-            "quiz": {}
         }
 
         # Hit the Node.js backend endpoint

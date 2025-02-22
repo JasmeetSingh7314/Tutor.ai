@@ -3,10 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import Sidebar from "../components/Dashboard/Sidebar";
 import LanguageProgress from "../components/Dashboard/LanguageProgress";
 import { Brain, Sparkles, Globe } from "lucide-react";
-import type { Language, UserProgress } from "../lib/types";
+import type { UserProgress } from "../lib/types";
 import { Navbar } from "../components/Navbar";
 import Footer from "@/components/Footer";
 import getUser from "@/apis/users/getUser";
+import { data } from "react-router-dom";
 
 const mockLanguages: any[] = [
   { name: "Spanish", progress: 65, wordsLearned: 500, level: 4 },
@@ -46,7 +47,7 @@ const Dashboard: React.FC = () => {
         <Sidebar
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          progress={75}
+          progress={userData?.knownWords?.length}
         />
 
         <main className="flex-1 p-8">
@@ -64,7 +65,7 @@ const Dashboard: React.FC = () => {
                     animate={{ opacity: 1 }}
                     className="text-4xl font-bold mb-4"
                   >
-                    Welcome back, Learner!
+                    Welcome back, {userData?.fullName}!
                   </motion.h1>
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -72,7 +73,7 @@ const Dashboard: React.FC = () => {
                     transition={{ delay: 0.2 }}
                     className="text-green-500"
                   >
-                    Your Spanish lesson is due today!
+                    Your {userData?.targetLanguage} lesson is due today!
                   </motion.div>
                 </header>
 
@@ -125,9 +126,13 @@ const Dashboard: React.FC = () => {
 
                 <section className="space-y-6">
                   <h2 className="text-2xl font-bold mb-6">Language Progress</h2>
-                  {mockLanguages.map((language) => (
-                    <LanguageProgress key={language.name} language={language} />
-                  ))}
+
+                  <LanguageProgress
+                    key={userData?.targetLanguage}
+                    language={userData?.targetLanguage}
+                    level={userData?.priorExperience}
+                    wordsProgress={userData?.knownWords?.length}
+                  />
                 </section>
               </motion.div>
             )}
