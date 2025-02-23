@@ -56,8 +56,6 @@ class MaterialHandler {
     try {
       const { createdBy, lesson, quiz } = req.body;
 
-      console.log("Hey!", createdBy, lesson, quiz);
-
       const checkExistingMaterial = await this.Material.findById(id);
 
       if (checkExistingMaterial) {
