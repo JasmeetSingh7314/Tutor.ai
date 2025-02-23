@@ -11,9 +11,10 @@ class LanguageLessonRequest(BaseModel):
     lesson:str
 
 class GenerateQuizRequest(BaseModel):
-    lang: str
-    level: str
-    unique_cards_str: str
+    lang:str
+    level:str
+    user_id:str
+
 
 class GetMeaningRequest(BaseModel):
     lang: str

@@ -4,7 +4,7 @@ import logging
 import httpx
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from agents.card_generation import create_language_lesson
+from agents.card_generation import create_language_lesson, get_unique_cards
 from agents.quiz_generation import generate_quiz
 from agents.word_meaning import get_meaning
 from models.api_models import GenerateQuizRequest, GetMeaningRequest, LanguageLessonRequest
@@ -90,29 +90,47 @@ async def create_quiz(request:GenerateQuizRequest):
     """
     Fetch lesson data from the Node.js backend by hitting its endpoint.
     """
-    lesson=get_lesson()
-         
-    quiz_data=generate_quiz(request.lang,request.level,json.dumps(lesson))
-    
     try:
-        # Hit the Node.js backend endpoint
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                f"{NODE_BACKEND_URL}/create-material",
-                json=quiz_data 
-            )
-            response.raise_for_status() 
-            logger.info("Material created successfully.")
+        print(request.user_id,request.lang,request.level)
+        lesson=await get_lesson(request.user_id)
+    
+        
+        lesson_object=lesson['data'][1]['lesson'][0]
+        
+        unique_str=get_unique_cards(lesson_object)
+        
+        print(unique_str)
+        quiz_data=generate_quiz(request.lang,request.level,unique_str)
+        
+        # try:
+        #     # Hit the Node.js backend endpoint
+        #     async with httpx.AsyncClient() as client:
+        #         response = await client.post(
+        #             f"{NODE_BACKEND_URL}/create-material",
+        #             json=quiz_data 
+        #         )
+        #         response.raise_for_status() 
+        #         logger.info("Material created successfully.")
 
-    except httpx.HTTPStatusError as e:
-        logger.error(f"HTTP error while creating material: {e}")
-        raise HTTPException(status_code=e.response.status_code, detail="Error fetching lesson data")
+        # except httpx.HTTPStatusError as e:
+        #     logger.error(f"HTTP error while creating material: {e}")
+        #     raise HTTPException(status_code=e.response.status_code, detail="Error fetching lesson data")
 
+        # except Exception as e:
+        #     logger.error(f"Unexpected error in create_lesson: {e}")
+        #     raise HTTPException(status_code=500, detail=str(e))
+
+        return {"message": "Lesson created successfully", "data": quiz_data}
+        
+        
     except Exception as e:
         logger.error(f"Unexpected error in create_lesson: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
-    return {"message": "Lesson created successfully", "data": quiz_data}
+    
+         
+   
+    
+    
         
     
         
@@ -120,16 +138,16 @@ async def create_quiz(request:GenerateQuizRequest):
         
 
 @app.get("/get-lesson")
-async def get_lesson():
+async def get_lesson(user_id):
     """
     Fetch lesson data from the Node.js backend by hitting its endpoint.
     """
-    user="67b8897d52639ae91ec00343"
+
     try:
         # Hit the Node.js backend endpoint
         async with httpx.AsyncClient() as client:
 
-            response = await client.get(f"http://localhost:3000/api/material/get-material/67b89d892178a8e71885c07f?fieldName=lesson")
+            response = await client.get(f"http://localhost:3000/api/material/get-material/{user_id}?fieldName=lesson")
             logger.info(f"Response from backend: {response.status_code}")
 
             response.raise_for_status()

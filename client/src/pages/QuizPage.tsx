@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Quiz from "../components/quiz/Quiz";
 import Results from "../components/quiz/Results";
 import type { QuizAnswer } from "../lib/types";
+import { createQuiz } from "@/apis/materials/createQuiz";
 
 const mockQuestions = [
   {
@@ -33,6 +34,13 @@ const mockQuestions = [
 const QuizPage: React.FC = () => {
   const [isQuizComplete, setIsQuizComplete] = useState(false);
   const [answers, setAnswers] = useState<QuizAnswer[]>([]);
+  useEffect(() => {
+    const getQuiz = async () => {
+      const quiz = createQuiz(localStorage.getItem("userId"));
+      console.log(quiz);
+    };
+    getQuiz();
+  }, []);
 
   const handleQuizComplete = (quizAnswers: QuizAnswer[]) => {
     setAnswers(quizAnswers);
