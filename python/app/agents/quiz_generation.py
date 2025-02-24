@@ -55,7 +55,7 @@ def generate_quiz(lang:str,level:str,unique_cards_str:str):
     quiz_client=instructor.patch(
         OpenAI(
             base_url="https://openrouter.ai/api/v1",
-            api_key="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"
+            api_key=""
         ),
         mode=instructor.Mode.JSON
     )
