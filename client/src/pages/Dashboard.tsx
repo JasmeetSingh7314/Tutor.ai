@@ -7,6 +7,7 @@ import getUser from "@/apis/users/getUser";
 
 import Lessons from "@/components/Dashboard/Lessons";
 import ProfileHeader from "@/components/Dashboard/ProfileHeader";
+import QuizPage from "./QuizPage";
 
 const address: string = localStorage.getItem("walletAddress");
 const userId: string = localStorage.getItem("userId");
@@ -33,12 +34,11 @@ const Dashboard: React.FC = () => {
       case "progress":
         return <ProfileHeader data={userData} />;
       case "lessons":
-        {
-          console.log("Lesson activated");
-        }
+        console.log("Lesson activated");
         return <Lessons userId={userId} />;
       case "quizzes":
-        return;
+        console.log("Quizzes");
+        return <QuizPage />;
     }
   }
 

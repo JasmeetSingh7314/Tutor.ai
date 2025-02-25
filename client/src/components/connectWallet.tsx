@@ -28,7 +28,7 @@ export const ConnectWallet = () => {
           localStorage.setItem("userId", userId);
 
           console.log("User ID stored:", userId);
-          navigate("/");
+          navigate("/profile");
         } else {
           navigate("/sign-up");
           console.error("User ID not found in response");
