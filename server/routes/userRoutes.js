@@ -13,7 +13,7 @@ router.put("/update-user/:id", (req, res) => {
   handler.updateUser(req, res);
 });
 
-router.get("/get-user/:id", (req, res) => {
+router.get("/get-user/:walletAddress", (req, res) => {
   handler.getUserDetails(req, res);
 });
 module.exports = router;

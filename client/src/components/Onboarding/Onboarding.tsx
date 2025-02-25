@@ -6,9 +6,8 @@ import type {
   PrimaryGoal,
   LearningStyle,
 } from "../../lib/types";
-import { useEffect } from "react";
-import updateUser from "@/apis/users/updateUser";
 import { useNavigate } from "react-router-dom";
+import { createUser } from "@/apis/users/createUser";
 
 const languages: Language[] = [
   { code: "en", name: "English" },
@@ -64,11 +63,11 @@ const Onboarding = () => {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     console.log("Form submitted:", data);
-    const userId = localStorage.getItem("userId");
+    const walletAddress = localStorage.getItem("walletAddress");
 
-    const patchUser = await updateUser(userId, data);
+    const newUser = await createUser({ ...data, walletAddress: walletAddress });
 
-    localStorage.setItem("userDetails", JSON.stringify(patchUser.data));
+    localStorage.setItem("userDetails", JSON.stringify(newUser.data));
 
     navigate("/profile");
 

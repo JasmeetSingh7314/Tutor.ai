@@ -1,21 +1,24 @@
-import axios from "axios";
-export const createUser = async () => {
-  const address = localStorage.getItem("walletAddress");
-  let data = JSON.stringify({
-    walletAddress: address,
-  });
+export const createUser = async (data: any) => {
+  try {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
 
-  let config = {
-    method: "POST",
-    maxBodyLength: Infinity,
-    url: "http://localhost:3000/api/users/create-user",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    data: data,
-  };
+    const requestOptions: any = {
+      method: "POST",
+      headers: myHeaders,
+      redirect: "follow",
+      body: JSON.stringify(data),
+    };
 
-  const response = await axios.request(config);
+    const response = await fetch(
+      "http://localhost:3000/api/users/create-user",
+      requestOptions
+    );
 
-  return response.data;
+    const result = (await response).json();
+
+    return result;
+  } catch (error) {
+    throw new Error("Creation of user failed");
+  }
 };

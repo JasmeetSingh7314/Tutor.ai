@@ -1,35 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Sidebar from "../components/Dashboard/Sidebar";
-import LanguageProgress from "../components/Dashboard/LanguageProgress";
-import { Brain, Sparkles, Globe } from "lucide-react";
-import type { UserProgress } from "../lib/types";
 import { Navbar } from "../components/Navbar";
 import Footer from "@/components/Footer";
 import getUser from "@/apis/users/getUser";
-import { data } from "react-router-dom";
 
-const mockLanguages: any[] = [
-  { name: "Spanish", progress: 65, wordsLearned: 500, level: 4 },
-  { name: "French", progress: 35, wordsLearned: 250, level: 2 },
-  { name: "German", progress: 20, wordsLearned: 150, level: 1 },
-];
+import Lessons from "@/components/Dashboard/Lessons";
+import ProfileHeader from "@/components/Dashboard/ProfileHeader";
 
-const mockProgress: UserProgress = {
-  totalXp: 2500,
-  nextLevelXp: 3000,
-  currentLevel: 15,
-  streak: 7,
-};
+const address: string = localStorage.getItem("walletAddress");
+const userId: string = localStorage.getItem("userId");
 
 const Dashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("lessons");
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [userData, setUserData] = useState();
+  const [activeTab, setActiveTab] = useState<string>("progress");
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [userData, setUserData] = useState<any>();
 
   useEffect(() => {
     const getUserData = async () => {
-      const user = await getUser(localStorage.getItem("userId"));
+      const user = await getUser(address);
       console.log(user.data);
       setUserData(user.data);
 
@@ -38,6 +27,20 @@ const Dashboard: React.FC = () => {
     getUserData();
     setIsLoaded(true);
   }, []);
+
+  function switchLogic(activeTab: string) {
+    switch (activeTab) {
+      case "progress":
+        return <ProfileHeader data={userData} />;
+      case "lessons":
+        {
+          console.log("Lesson activated");
+        }
+        return <Lessons userId={userId} />;
+      case "quizzes":
+        return;
+    }
+  }
 
   return (
     <main>
@@ -77,63 +80,7 @@ const Dashboard: React.FC = () => {
                   </motion.div>
                 </header>
 
-                <section className="grid grid-cols-3 gap-6 mb-12">
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    className="bg-black/30 backdrop-blur-sm p-6 rounded-xl flex items-center gap-4"
-                  >
-                    <div className="p-3 bg-green-500/10 rounded-lg">
-                      <Brain className="w-8 h-8 text-green-500" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold">Total XP</h3>
-                      <p className="text-2xl font-bold text-green-500">
-                        {mockProgress.totalXp}
-                      </p>
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    className="bg-black/30 backdrop-blur-sm p-6 rounded-xl flex items-center gap-4"
-                  >
-                    <div className="p-3 bg-green-500/10 rounded-lg">
-                      <Sparkles className="w-8 h-8 text-green-500" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold">Current Level</h3>
-                      <p className="text-2xl font-bold text-green-500">
-                        {mockProgress.currentLevel}
-                      </p>
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    className="bg-black/30 backdrop-blur-sm p-6 rounded-xl flex items-center gap-4"
-                  >
-                    <div className="p-3 bg-green-500/10 rounded-lg">
-                      <Globe className="w-8 h-8 text-green-500" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold">Day Streak</h3>
-                      <p className="text-2xl font-bold text-green-500">
-                        {mockProgress.streak}
-                      </p>
-                    </div>
-                  </motion.div>
-                </section>
-
-                <section className="space-y-6">
-                  <h2 className="text-2xl font-bold mb-6">Language Progress</h2>
-
-                  <LanguageProgress
-                    key={userData?.targetLanguage}
-                    language={userData?.targetLanguage}
-                    level={userData?.priorExperience}
-                    wordsProgress={userData?.knownWords?.length}
-                  />
-                </section>
+                {switchLogic(activeTab)}
               </motion.div>
             )}
           </AnimatePresence>

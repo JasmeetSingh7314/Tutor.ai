@@ -1,5 +1,4 @@
-export default async function getUser(userId: string | undefined) {
-  console.log(userId);
+export default async function getUser(walletAddress: string) {
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
@@ -10,7 +9,7 @@ export default async function getUser(userId: string | undefined) {
   };
 
   const response = await fetch(
-    `http://localhost:3000/api/users/get-user/${userId}`,
+    `http://localhost:3000/api/users/get-user/${walletAddress}`,
     requestOptions
   );
 

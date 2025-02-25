@@ -36,6 +36,7 @@ app.add_middleware(
 
 class LessonRequest(BaseModel):
     user_id:str
+    address:str
 
 @app.options("/create-lesson")
 async def preflight_handler():
@@ -50,13 +51,13 @@ async def create_lesson(request: LessonRequest):
     """
     try:
         # Fetch user data
-        user_response = await get_user(request.user_id)
+        user_response = await get_user(request.address)
         known_words = user_response['data']['knownWords']
         target_language = user_response['data']['targetLanguage']
         prior_experience = user_response['data']['priorExperience']
         
         
-        print(known_words,target_language,prior_experience,user_id)
+        print(known_words,target_language,prior_experience,request.address)
         # Create lesson
         lesson_response = create_language_lesson(target_language, prior_experience, " ".join(known_words))
 
@@ -172,16 +173,16 @@ async def get_lesson(user_id):
 
     
 @app.get("/get-user")
-async def get_user(user_id):
+async def get_user(address):
     """
     Fetch lesson data from the Node.js backend by hitting its endpoint.
     """
     try:
-        print(user_id)
+        print(address)
         # Hit the Node.js backend endpoint
         async with httpx.AsyncClient() as client:
 
-            response = await client.get(f"http://localhost:3000/api/users/get-user/{user_id}")
+            response = await client.get(f"http://localhost:3000/api/users/get-user/{address}")
             logger.info(f"Response from backend: {response.status_code}")
 
             response.raise_for_status()

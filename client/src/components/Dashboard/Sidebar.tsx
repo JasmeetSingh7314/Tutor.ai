@@ -3,11 +3,10 @@ import { motion } from "framer-motion";
 import { Brain, Book, Trophy, Star } from "lucide-react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { Link } from "react-router-dom";
 
 interface SidebarProps {
   activeTab: string;
-  onTabChange: (tab: string) => void;
+  onTabChange: any;
   progress: number;
 }
 
@@ -50,22 +49,20 @@ const Sidebar: React.FC<SidebarProps> = ({
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
-            <Link to={tab.link} className="w-full">
-              <motion.button
-                key={tab.id}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex items-center w-full gap-3 px-4 py-3 rounded-lg transition-colors mt-2 ${
-                  activeTab === tab.id
-                    ? "bg-green-600 text-white"
-                    : "text-gray-400 hover:bg-green-600/10"
-                }`}
-                onClick={() => onTabChange(tab.id)}
-              >
-                <Icon size={20} />
-                <span>{tab.label}</span>
-              </motion.button>
-            </Link>
+            <motion.button
+              key={tab.id}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`flex items-center w-full gap-3 px-4 py-3 rounded-lg transition-colors mt-2 ${
+                activeTab === tab.id
+                  ? "bg-green-600 text-white"
+                  : "text-gray-400 hover:bg-green-600/10"
+              }`}
+              onClick={() => onTabChange(tab.id)}
+            >
+              <Icon size={20} />
+              <span>{tab.label}</span>
+            </motion.button>
           );
         })}
       </nav>

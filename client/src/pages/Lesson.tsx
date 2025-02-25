@@ -1,4 +1,3 @@
-import { createLesson } from "@/apis/materials/createLesson";
 import { VocabCard } from "@/components/lesson/VocabCard";
 import { Button } from "@heroui/react";
 import { Menu } from "lucide-react";
@@ -6,13 +5,23 @@ import { useEffect, useState } from "react";
 import { Drawer } from "@/components/lesson/Drawer";
 import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useLocation, useNavigate } from "react-router-dom";
 import updateWords from "@/apis/users/updateWords";
+
 const Lesson = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
 
-  const [data, setData] = useState([]);
-  const [toggle, setToggle] = useState(true);
+  const location = useLocation();
+  const data = location.state.lesson;
+
+  const isNew = location.state.isNew;
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
+  const navigate = useNavigate();
 
   const [userId, setUserID] = useState<string | null>();
 
@@ -27,20 +36,6 @@ const Lesson = () => {
 
   const handleNext = () => {
     setCurrentWordIndex((prev) => (prev + 1) % data?.length);
-  };
-
-  useEffect(() => {
-    const getLesson = async () => {
-      const lessonResponse = await createLesson(userId);
-
-      console.log(lessonResponse.data.lesson.vocab);
-      setData(lessonResponse.data.lesson.vocab);
-    };
-    getLesson();
-  }, [toggle]);
-
-  const setAlco = async () => {
-    setToggle(!toggle);
   };
 
   return (
@@ -59,19 +54,14 @@ const Lesson = () => {
               variant="ghost"
               color="warning"
               onPress={() => {
-                updateWords(userId, data);
+                if (isNew) {
+                  updateWords(userId, data);
+                }
+                navigate("/profile");
               }}
-              className="rounded-md p-6"
-            >
-              <Menu className="h-5 w-5" /> End Lesson
-            </Button>
-            <Button
-              variant="ghost"
-              onPress={() => setAlco()}
-              color="danger"
               className="rounded-md p-6 "
             >
-              <Menu className="h-5 w-5" /> Generate Lesson
+              <Menu className="h-5 w-5" /> End Lesson
             </Button>
           </div>
         </main>

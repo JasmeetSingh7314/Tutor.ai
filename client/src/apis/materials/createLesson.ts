@@ -1,6 +1,7 @@
 export const createLesson = async (user_id: string) => {
   try {
     console.log(user_id);
+    const address = localStorage.getItem("walletAddress");
     const response = await fetch("http://localhost:8000/create-lesson", {
       method: "POST",
       headers: {
@@ -8,6 +9,7 @@ export const createLesson = async (user_id: string) => {
       },
       body: JSON.stringify({
         user_id: user_id,
+        address: address,
       }),
     });
 

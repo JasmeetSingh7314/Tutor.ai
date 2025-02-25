@@ -16,6 +16,7 @@ export default async function updateUser(
     body: raw,
     redirect: "follow",
   };
+  
 
   const response = await fetch(
     `http://localhost:3000/api/users/update-user/${userId}`,

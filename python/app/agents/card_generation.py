@@ -1,9 +1,12 @@
 import logging
 import os
+from dotenv import load_dotenv
 import instructor
 from openai import OpenAI
 from models.card_models import VocabularyCards
 from utils.common_functions import deduplicate_cards
+
+load_dotenv()
 
 logging.basicConfig(
     level=logging.INFO,
@@ -15,7 +18,7 @@ logger=logging.getLogger(__name__)
 
 # # Explicit prompt with formatting rules
 def generate_card_prompt(lang: str, level: str,knownwords:str) -> str:
-    return f"""You are a {lang} vocabulary teacher. Generate 5 vocabulary cards for {level}-level learners. 
+    return f"""You are a {lang} vocabulary teacher. Generate 2 vocabulary cards for {level}-level learners. 
     -MAKE SURE TO NOT REPEAT THESE WORDS:{knownwords} 
     - Return STRICTLY in JSON format.  
     - Use the appropriate script for the word in sentences (e.g., Kanji for Japanese, Hanzi for Chinese, etc.).  
@@ -69,11 +72,13 @@ def create_language_lesson(lang:str,level:str,knownwords):
     """Function to create the language lesson"""
 
     logger.info("Generating Lesson")
+    
+    open_router_key=os.getenv('OPEN_ROUTER_KEY')
 
     client=instructor.patch(
         OpenAI(
             base_url="https://openrouter.ai/api/v1",
-            api_key=""
+            api_key=open_router_key
         ),
         mode=instructor.Mode.JSON
     )

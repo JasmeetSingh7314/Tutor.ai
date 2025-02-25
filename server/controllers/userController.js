@@ -53,10 +53,9 @@ class UserHandler {
 
   async getUserDetails(req, res) {
     try {
-      const id = req.params.id;
-      console.log(id);
-      const userData = await this.User.findById(id);
-      console.log(userData);
+      const address = req.params.walletAddress;
+      const userData = await this.User.findOne({ walletAddress: address });
+      console.log("The Found data:", userData);
       res.status(200).json({
         success: true,
         message: "User data fetched successfully",
@@ -88,19 +87,23 @@ class UserHandler {
         targetLanguage,
         nativeLanguage,
         priorExperience,
-        preference
+        preference,
+        knownWords
       );
       const updatedUser = await this.User.findByIdAndUpdate(id, {
-        fullName: fullName,
-        email: email,
-        targetLanguage: targetLanguage,
-        nativeLanguage: nativeLanguage,
-        priorExperience: priorExperience,
-        preference: preference,
-        profileImage: profileImage,
-        reviewWords: reviewWords,
-        knownWords: knownWords,
-        weaknesses: weaknesses,
+        $set: {
+          fullName: fullName,
+          email: email,
+          targetLanguage: targetLanguage,
+          nativeLanguage: nativeLanguage,
+          priorExperience: priorExperience,
+          preference: preference,
+          profileImage: profileImage,
+          reviewWords: reviewWords,
+          weaknesses: weaknesses,
+        },
+
+        $push: { knownWords: { $each: knownWords } },
       });
       res.status(201).json({
         success: true,

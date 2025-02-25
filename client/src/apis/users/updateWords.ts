@@ -4,25 +4,12 @@ export default function updateWords(userId: string, currentWords: any[]) {
 
   knownWords = currentWords.map((element: any) => element.word_details.word);
 
-  console.log(knownWords, currentWords);
-  const prevWords = JSON.parse(localStorage.getItem("userDetails"))?.knownWords;
-
-  console.log(prevWords);
-  const newWords = [...prevWords, ...knownWords];
-
-  console.log(newWords);
+  console.log(knownWords);
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
   const raw = JSON.stringify({
-    profileImage: "./updated",
-    reviewWords: ["突破とっぱ", "先走さきばしる", "防衛ぼうえい"],
-    knownWords: newWords,
-    weaknesses: [
-      {
-        vocab: "you need to work on your vocab",
-      },
-    ],
+    knownWords: knownWords,
   });
 
   const requestOptions: any = {

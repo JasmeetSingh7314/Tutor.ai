@@ -1,7 +1,7 @@
 import { useSDK } from "@metamask/sdk-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { createUser } from "@/apis/users/createUser";
+
 import {
   Dropdown,
   DropdownTrigger,
@@ -9,6 +9,7 @@ import {
   DropdownItem,
   Button,
 } from "@heroui/react";
+import getUser from "@/apis/users/getUser";
 
 export const ConnectWallet = () => {
   const [account, setAccount] = useState<string | undefined>();
@@ -16,22 +17,20 @@ export const ConnectWallet = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getUser = async () => {
+    const checkUser = async () => {
       try {
-        const userdetails = await createUser();
+        const walletAddress: string = localStorage.getItem("walletAddress");
+        const userdetails = await getUser(walletAddress);
         console.log("User Details:", userdetails);
 
-        if (userdetails?.data?._id) {
+        if (userdetails.success && userdetails.data !== null) {
           const userId = userdetails.data._id;
           localStorage.setItem("userId", userId);
 
-          if (userdetails.message === "User already exists") {
-            navigate("/");
-          } else {
-            navigate("/sign-up");
-          }
           console.log("User ID stored:", userId);
+          navigate("/");
         } else {
+          navigate("/sign-up");
           console.error("User ID not found in response");
         }
       } catch (error) {
@@ -40,7 +39,7 @@ export const ConnectWallet = () => {
     };
 
     if (account) {
-      getUser();
+      checkUser();
     }
   }, [account]);
 

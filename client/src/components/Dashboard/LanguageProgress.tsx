@@ -1,12 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
-import type { Language } from "../../lib/types";
 
-interface LanguageProgressProps {
-  language: Language;
-}
-
-const LanguageProgress: React.FC<any> = ({ language ,level,wordsProgress}) => {
+const LanguageProgress: React.FC<any> = ({
+  language,
+  level,
+  wordsProgress,
+}) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

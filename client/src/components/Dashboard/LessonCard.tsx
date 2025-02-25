@@ -1,19 +1,41 @@
 import { motion } from "framer-motion";
-import { Brain, Trophy, BookOpen, Target } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const FeatureCard = (lesson) => {
+type LessonCardProps = {
+  lesson: any;
+  index: number;
+};
+const LessonCard = ({ lesson, index }: LessonCardProps) => {
+  // console.log(lesson, index);
+  const navigate = useNavigate();
+  const handleCardOnClick = () => {
+    navigate("/lesson", { state: { lesson: lesson.vocab, isNew: false } });
+  };
   return (
     <motion.div
+      key={index}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="relative p-8 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 backdrop-blur-sm"
+      transition={{ duration: 0.1 }}
+      whileHover={{ scale: 1.001 }}
+      className="relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-xl hover:border hover: border-gray-200/55 p-6 group h-fit cursor-pointer font-nunito "
+      onClick={() => handleCardOnClick()}
     >
-      <div className="absolute top-0 left-0 w-full h-full bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      <Icon className="w-12 h-12 text-primary mb-6" />
-      <h3 className="text-2xl font-semibold text-white mb-4">{title}</h3>
-      <p className="text-gray-400 leading-relaxed">{description}</p>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <h3 className="text-xl font-semibold text-white mb-2">{`Lesson ${
+        index + 1
+      }`}</h3>
+      <p className="text-gray-400/55 mb-4">Words covered:</p>
+      <ul className="flex flex-col gap-y-5 list-disc px-6">
+        {lesson.vocab.map((detail: any, index: number) => (
+          <li key={index} className="text-gray-400 text-xl ">
+            {detail?.word_details?.word}
+          </li>
+        ))}
+      </ul>
     </motion.div>
   );
 };
+
+export default LessonCard;

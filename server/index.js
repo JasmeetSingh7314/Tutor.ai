@@ -14,6 +14,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use("/api/users", userRouter);
 app.use("/api/material", materialRouter);
+app.options("*", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.send("ok");
+});
 
 connectDB(process.env.MONGO_URL);
 // initModel();
