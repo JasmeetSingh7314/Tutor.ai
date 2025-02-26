@@ -9,7 +9,7 @@ type LessonProps = {
   userId: string;
 };
 
-const Lessons = ({ userId }: LessonProps) => {
+const Lessons = () => {
   const [lessonData, setLessonData] = useState([]);
   const [data, setData] = useState([]);
   const [toggle, setToggle] = useState(false);
@@ -17,7 +17,7 @@ const Lessons = ({ userId }: LessonProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const isRender = useRef(true);
-
+  const userId: string = localStorage.getItem("userId");
   const navigate = useNavigate();
   useEffect(() => {
     const getLesson = async () => {
@@ -77,7 +77,11 @@ const Lessons = ({ userId }: LessonProps) => {
 
       <div className="grid grid-cols-2 gap-10">
         {lessonData?.map((lesson, index) => (
-          <LessonCard lesson={lesson} index={index} data={lessonData[index]?.lesson} />
+          <LessonCard
+            lesson={lesson}
+            index={index}
+            data={lessonData[index]?.lesson}
+          />
         ))}
       </div>
     </section>

@@ -12,8 +12,8 @@ import Quizzes from "@/components/Dashboard/quiz/Quizzes";
 import { Brain, Globe, Sparkles } from "lucide-react";
 import ChatArea from "@/components/Dashboard/progress/ChatArea";
 
-const address: string = localStorage.getItem("walletAddress");
-const userId: string = localStorage.getItem("userId");
+// const address: string = localStorage.getItem("walletAddress");
+// const userId: string = localStorage.getItem("userId");
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("progress");
@@ -22,6 +22,8 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const getUserData = async () => {
+      const address: string = localStorage.getItem("walletAddress");
+
       const user = await getUser(address);
       console.log(user.data);
       setUserData(user.data);
@@ -32,6 +34,7 @@ const Dashboard: React.FC = () => {
     setIsLoaded(true);
   }, []);
 
+  const userId: string = localStorage.getItem("userId");
   function switchLogic(activeTab: string) {
     switch (activeTab) {
       case "progress":

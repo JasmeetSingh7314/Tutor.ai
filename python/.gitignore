@@ -1,5 +1,5 @@
 /.env
-/.venv
+venv
 /app/misc
 /app/__pycache__
 /app/agents/__pycache__

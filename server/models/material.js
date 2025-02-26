@@ -9,7 +9,7 @@ const materialSchema = new Schema(
         lesson: { type: Object },
       },
     ],
-    quiz: [{ type: Object}],
+    quiz: [{ type: Schema.Types.ObjectId, ref: "quiz" }],
   },
   { timestamps: true }
 );
