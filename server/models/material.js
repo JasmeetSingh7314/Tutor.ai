@@ -3,8 +3,13 @@ const { Schema, model } = require("mongoose");
 const materialSchema = new Schema(
   {
     createdBy: { type: Schema.Types.ObjectId, ref: "users" },
-    lesson: [{ type: Object }],
-    quiz: [{ type: Object }],
+    lesson: [
+      {
+        _id: { type: Schema.Types.ObjectId, auto: true },
+        lesson: { type: Object },
+      },
+    ],
+    quiz: [{ type: Object}],
   },
   { timestamps: true }
 );

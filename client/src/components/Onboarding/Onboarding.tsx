@@ -6,6 +6,7 @@ import type {
   PrimaryGoal,
   LearningStyle,
 } from "../../lib/types";
+
 import { useNavigate } from "react-router-dom";
 import { createUser } from "@/apis/users/createUser";
 

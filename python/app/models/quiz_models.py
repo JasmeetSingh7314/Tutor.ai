@@ -20,6 +20,8 @@ class Questions(BaseModel):
     translation:str=Field(...,description="Translated sentence that the user can understand")
     ans: str = Field(..., min_length=1, description="Correct answer word")
     options: List[Meaning] = Field(..., min_length=4, max_length=4, description="4 multiple-choice options")
+    category:str=Field(..., min_length=1, description="Category of the question")
+    subcategory:str=Field(..., min_length=1, description="Subcategory of the question")
 
 class Quiz_Model(BaseModel):
     quiz: List[Questions]

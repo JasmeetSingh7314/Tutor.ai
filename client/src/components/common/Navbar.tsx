@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { ConnectWallet } from "./connectWallet";
+import { ConnectWallet } from "../connectWallet";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,7 +36,7 @@ export const Navbar = () => {
           <div className="flex items-center">
             <a
               href="/"
-              className="text-[#22B357] text-3xl font-semibold tracking-wider font-playwrite"
+              className="text-[#22B357] text-4xl font-semibold  font-urbanist"
             >
               Tutor.ai
             </a>

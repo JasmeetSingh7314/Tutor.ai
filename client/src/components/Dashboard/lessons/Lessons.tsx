@@ -4,7 +4,6 @@ import LessonCard from "./LessonCard";
 import { Button } from "@heroui/react";
 import { createLesson } from "@/apis/materials/createLesson";
 import { useNavigate } from "react-router-dom";
-import { delay } from "framer-motion";
 
 type LessonProps = {
   userId: string;
@@ -25,6 +24,7 @@ const Lessons = ({ userId }: LessonProps) => {
       const response = await getMaterial(userId);
       //   console.log(response?.data[0]?.lesson);
       setLessonData(response?.data[0]?.lesson);
+      console.log("get lesson", response?.data[0]?.lesson);
     };
     getLesson();
   }, []);
@@ -47,7 +47,6 @@ const Lessons = ({ userId }: LessonProps) => {
 
     if (isRender.current) {
       isRender.current = false;
-
       return;
     } else {
       getLesson();
@@ -67,7 +66,7 @@ const Lessons = ({ userId }: LessonProps) => {
         <Button
           variant="solid"
           size="lg"
-          className="rounded-md bg-cyan-600 font-nunito font-bold p-4 tracking-wider"
+          className="rounded-md bg-cyan-600/45 font-nunito font-bold p-4 tracking-wider"
           onPress={() => handleNewLesson()}
         >
           {loading ? "Generating...." : "New Lesson!"}
@@ -78,7 +77,7 @@ const Lessons = ({ userId }: LessonProps) => {
 
       <div className="grid grid-cols-2 gap-10">
         {lessonData?.map((lesson, index) => (
-          <LessonCard lesson={lesson} index={index} />
+          <LessonCard lesson={lesson} index={index} data={lessonData[index]?.lesson} />
         ))}
       </div>
     </section>

@@ -1,12 +1,13 @@
-import { VocabCard } from "@/components/lesson/VocabCard";
+import { VocabCard } from "@/components/Lesson/VocabCard";
 import { Button } from "@heroui/react";
 import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Drawer } from "@/components/lesson/Drawer";
-import { Navbar } from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { Drawer } from "@/components/Lesson/Drawer";
+import { Navbar } from "@/components/common/Navbar";
+import Footer from "@/components/common/Footer";
 import { useLocation, useNavigate } from "react-router-dom";
 import updateWords from "@/apis/users/updateWords";
+import { createQuiz } from "@/apis/materials/createQuiz";
 
 const Lesson = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -16,6 +17,8 @@ const Lesson = () => {
   const data = location.state.lesson;
 
   const isNew = location.state.isNew;
+
+  const lessonId = location.state.lessonId;
 
   useEffect(() => {
     console.log(data);
@@ -62,6 +65,16 @@ const Lesson = () => {
               className="rounded-md p-6 "
             >
               <Menu className="h-5 w-5" /> End Lesson
+            </Button>
+            <Button
+              variant="ghost"
+              color="warning"
+              onPress={() => {
+                createQuiz(lessonId, userId);
+              }}
+              className="rounded-md p-6 "
+            >
+              <Menu className="h-5 w-5" /> Generate Id
             </Button>
           </div>
         </main>

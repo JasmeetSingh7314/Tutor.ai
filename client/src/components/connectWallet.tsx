@@ -73,7 +73,7 @@ export const ConnectWallet = () => {
               <Button
                 variant="solid"
                 size="lg"
-                className="bg-[white] rounded-md text-black m-10"
+                className="bg-black rounded-md text-white text-xl m-10 font-urbanist font-bold uppercase px-4"
               >
                 <span>
                   {localStorage.getItem("walletAddress")?.slice(0, 10) + "..."}
@@ -84,7 +84,10 @@ export const ConnectWallet = () => {
               aria-label="Static Actions"
               className="bg-black rounded-md p-4"
             >
-              <DropdownItem key="new" className="font-urbanist">
+              <DropdownItem
+                key="new"
+                className="font-montserrat font-xl font-bold uppercase tracking-wider text-white"
+              >
                 <Link to="/profile">Profile</Link>
               </DropdownItem>
               <DropdownItem
@@ -104,7 +107,7 @@ export const ConnectWallet = () => {
             variant="solid"
             onPress={connect}
             size="lg"
-            className="bg-[white] rounded-md text-black m-10"
+            className="bg-[white]/35 rounded-md text-white text-xl m-10 font-urbanist font-bold uppercase px-4"
           >
             Connect Wallet
           </Button>

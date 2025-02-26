@@ -113,7 +113,7 @@ def get_unique_cards(json_data):
     seen_words = set()  # Track words we've already seen
 
     # Iterate through each card in the JSON data
-    for card in json_data['vocab']:
+    for card in json_data:
         word = card['word_details']['word']
         
         # If the word hasn't been seen, add the card to the unique list

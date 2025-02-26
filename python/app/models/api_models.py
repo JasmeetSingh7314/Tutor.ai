@@ -13,7 +13,9 @@ class LanguageLessonRequest(BaseModel):
 class GenerateQuizRequest(BaseModel):
     lang:str
     level:str
+    lesson_id:str
     user_id:str
+    data:list[object]
 
 
 class GetMeaningRequest(BaseModel):

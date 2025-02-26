@@ -15,7 +15,7 @@ logger=logging.getLogger(__name__)
 
 def generate_quiz_prompt(lang: str, level: str, unique_cards_str: str) -> str:
     return f"""
-    You are a {lang} vocabulary teacher. Generate 5 fill-in-the-blank exercises for {level}-level learners.
+    You are a {lang} expert. Generate 5 fill-in-the-blank exercises for {level}-level learners.
     - Use the following vocabulary words and sentences:
     {unique_cards_str}
     
@@ -38,7 +38,9 @@ def generate_quiz_prompt(lang: str, level: str, unique_cards_str: str) -> str:
            {{"word": "成功", "reading": "せいこう", "meaning": "success"}},
            {{"word": "経験", "reading": "けいけん", "meaning": "experience"}},
            {{"word": "知識", "reading": "ちしき", "meaning": "knowledge"}}
-         ]
+         ],
+         "category": "grammar", 
+         "subcategory": "past tense"
        }}
     
     3. Additional Rules:
@@ -51,11 +53,11 @@ def generate_quiz_prompt(lang: str, level: str, unique_cards_str: str) -> str:
 
 def generate_quiz(lang:str,level:str,unique_cards_str:str):
     logger.info("Generating quiz")
-
+    open_router_key=os.getenv('OPEN_ROUTER_KEY')
     quiz_client=instructor.patch(
         OpenAI(
             base_url="https://openrouter.ai/api/v1",
-            api_key=""
+            api_key=open_router_key
         ),
         mode=instructor.Mode.JSON
     )

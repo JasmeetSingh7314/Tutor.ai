@@ -13,9 +13,9 @@ class MaterialHandler {
       // if (fieldName) {
       //   projection[fieldName] = 1;
       // }
-      const lessonData = await this.Material.find({ createdBy: id })
-        // .select(projection)
-        // .lean();
+      const lessonData = await this.Material.find({ createdBy: id });
+      // .select(projection)
+      // .lean();
 
       res.status(201).json({
         success: true,
@@ -28,8 +28,8 @@ class MaterialHandler {
   }
   async createMaterial(req, res) {
     try {
-      const { createdBy, lesson, quiz } = req.body;
-      // console.log(createdBy, lesson, quiz);
+      const { createdBy, lesson, quiz} = req.body;
+      console.log(createdBy, lesson, quiz);
 
       // Check if material exists for the user
       const existingMaterial = await this.Material.findOne({ createdBy });
@@ -42,13 +42,12 @@ class MaterialHandler {
 
         // Append lessons if provided
         if (lesson) {
-          updateFields.$push = { lesson: lesson }; // Use $each to append multiple lessons
+          updateFields.$push = { lesson: { lesson: lesson } };
         }
-
+        console.log("UPDATE", updateFields);
         // Append quizzes if provided
-        if (Array.isArray(quiz) && quiz.length > 0) {
-          updateFields.$push = updateFields.$push || {}; // Ensure $push exists
-          updateFields.$push.quiz = { quiz }; // Use $each to append multiple quizzes
+        if (quiz) {
+          updateFields.$push = { quiz: quiz };
         }
 
         console.log("Update fields:", updateFields);

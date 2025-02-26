@@ -1,15 +1,21 @@
-export const createQuiz = async (user_id: string) => {
+export const createQuiz = async (
+  lessonId: string,
+  userId: string,
+  lessonData: any
+) => {
   try {
-    console.log(user_id);
+    console.log(userId, userId, lessonData);
     const response = await fetch("http://localhost:8000/create-quiz", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        user_id: user_id,
+        user_id: userId,
+        lesson_id: lessonId,
         lang: JSON.parse(localStorage.getItem("userDetails")).targetLanguage,
         level: JSON.parse(localStorage.getItem("userDetails")).priorExperience,
+        data: lessonData.vocab,
       }),
     });
 

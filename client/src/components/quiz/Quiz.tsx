@@ -8,36 +8,10 @@ import { Label } from "../ui/label";
 
 interface QuizProps {
   onComplete: (answers: QuizAnswer[]) => void;
+  questions: any;
 }
 
-const mockQuestions: QuizQuestion[] = [
-  {
-    ques: "新しい______を積むことが大切です。",
-    simplified_ques: "あたらしい______をつむことがたいせつです。",
-    translation: "It is important to accumulate new ______.",
-    ans: "経験",
-    options: [
-      { word: "経験", reading: "けいけん", meaning: "experience" },
-      { word: "努力", reading: "どりょく", meaning: "effort" },
-      { word: "知識", reading: "ちしき", meaning: "knowledge" },
-      { word: "技術", reading: "ぎじゅつ", meaning: "skill" },
-    ],
-  },
-  {
-    ques: "新しい______を積むことが大切です。",
-    simplified_ques: "あたらしい______をつむことがたいせつです。",
-    translation: "It is important to accumulate new ______.",
-    ans: "経験",
-    options: [
-      { word: "経験", reading: "けいけん", meaning: "experience" },
-      { word: "努力", reading: "どりょく", meaning: "effort" },
-      { word: "知識", reading: "ちしき", meaning: "knowledge" },
-      { word: "技術", reading: "ぎじゅつ", meaning: "skill" },
-    ],
-  },
-];
-
-const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
+const Quiz: React.FC<QuizProps> = ({ onComplete, questions }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswer[]>([]);
   const { register, handleSubmit, reset, watch, setValue } = useForm();
@@ -45,7 +19,7 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
 
   const onSubmit = (data: any) => {
     const selectedAnswer = data.answer;
-    const isCorrect = selectedAnswer === mockQuestions[currentQuestion].ans;
+    const isCorrect = selectedAnswer === questions[currentQuestion].ans;
 
     const newAnswer: QuizAnswer = {
       questionIndex: currentQuestion,
@@ -55,7 +29,7 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
 
     setAnswers([...answers, newAnswer]);
 
-    if (currentQuestion < mockQuestions.length - 1) {
+    if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
       reset();
     } else {
@@ -72,20 +46,18 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
           initial={{ x: 300, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: -300, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 100 }}
+          transition={{ type: "spring", stiffness: 100, duration: "0.2" }}
           className="w-full max-w-2xl bg-black/30 backdrop-blur-md p-8 rounded-2xl shadow-xl"
         >
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-white mb-2">
-              Question {currentQuestion + 1} of {mockQuestions.length}
+              Question {currentQuestion + 1} of {questions.length}
             </h2>
             <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
               <div
                 className="h-full bg-green-500 transition-all duration-300"
                 style={{
-                  width: `${
-                    ((currentQuestion + 1) / mockQuestions.length) * 100
-                  }%`,
+                  width: `${((currentQuestion + 1) / questions.length) * 100}%`,
                 }}
               />
             </div>
@@ -94,13 +66,13 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-4">
               <p className="text-2xl font-medium text-white">
-                {mockQuestions[currentQuestion].ques}
+                {questions[currentQuestion].ques}
               </p>
               <p className="text-xl text-gray-400">
-                {mockQuestions[currentQuestion].simplified_ques}
+                {questions[currentQuestion].simplified_ques}
               </p>
               <p className="text-lg text-gray-500 italic">
-                {mockQuestions[currentQuestion].translation}
+                {questions[currentQuestion].translation}
               </p>
             </div>
 
@@ -111,7 +83,7 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
                 onValueChange={(value) => setValue("answer", value)}
                 className="space-y-4"
               >
-                {mockQuestions[currentQuestion].options.map((option: any) => (
+                {questions[currentQuestion].options.map((option: any) => (
                   <label
                     key={option.word}
                     className="relative flex gap-x-5 items-center p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group"
@@ -143,7 +115,7 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
               className="w-full py-4 px-6 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-lg transition-colors"
               type="submit"
             >
-              {currentQuestion === mockQuestions.length - 1
+              {currentQuestion === questions.length - 1
                 ? "Finish Quiz"
                 : "Next Question"}
             </motion.button>
