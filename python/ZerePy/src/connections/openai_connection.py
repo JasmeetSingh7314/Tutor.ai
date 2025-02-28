@@ -93,7 +93,7 @@ class OpenAIConnection(BaseConnection):
         logger.info("2. Create a new project or open an existing one.")
         logger.info("3. In your project settings, navigate to the API keys section and create a new API key")
         
-        api_key ="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"
+        api_key =os.getenv("OPENAI_API_KEY")
 
         try:
             if not os.path.exists('.env'):
