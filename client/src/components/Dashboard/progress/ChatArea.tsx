@@ -1,15 +1,37 @@
 import { Send } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const ChatArea = () => {
+const ChatArea = (data: any) => {
+  const navigate = useNavigate();
+  const [input, setInput] = useState("");
+
   const messages = [
     {
       id: "1",
-      text: "Welcome to your Korean lesson! Tutors ready! Ready to continue where we left off?",
+      text: `Welcome to your ${data?.data?.targetLanguage} lesson! Tutors ready! Ready to continue where we left off?`,
       sender: "ai",
       timestamp: new Date(),
     },
   ];
+
+  const handleOnSend = () => {
+    const newMessage = {
+      id: Date.now().toString(),
+      input,
+      sender: "user",
+      timestamp: new Date(),
+    };
+
+    setInput("");
+    console.log(data?.data);
+    navigate("/chat", {
+      state: {
+        userData: data?.data,
+        userMessage: newMessage,
+      },
+    });
+  };
   return (
     <div className="  backdrop-blur-sm rounded-2xl p-6 mb-6 font-nunito">
       <div className="space-y-6 mb-6">
@@ -31,14 +53,6 @@ const ChatArea = () => {
             </div>
           </div>
         ))}
-        {/* {isThinking && (
-                <div className="flex justify-start">
-                  <div className="bg-zinc-800 rounded-2xl px-4 py-3 flex items-center gap-2">
-                    <Loader2 className="animate-spin" size={18} />
-                    Thinking...
-                  </div>
-                </div>
-              )} */}
       </div>
       <div className="flex gap-4">
         <input
@@ -46,7 +60,10 @@ const ChatArea = () => {
           placeholder="Type your message..."
           className="flex-1 bg-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
-        <button className="px-4 py-2 rounded-xl bg-green-500 text-black font-medium hover:bg-green-400 transition-colors flex items-center gap-2">
+        <button
+          className="px-4 py-2 rounded-xl bg-green-500 text-black font-medium hover:bg-green-400 transition-colors flex items-center gap-2"
+          onClick={() => handleOnSend()}
+        >
           <Send size={18} />
           Send
         </button>

@@ -15,4 +15,5 @@ router.get("/get-material/:id", (req, res) => {
 router.put("/update-material", (req, res) => {
   handler.updateMaterial(req, res);
 });
+
 module.exports = router;

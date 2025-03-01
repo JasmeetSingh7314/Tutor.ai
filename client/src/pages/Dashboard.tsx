@@ -118,7 +118,7 @@ const Dashboard: React.FC = () => {
                     </motion.div>
                   </section>
                 </header>
-                <ChatArea />
+                <ChatArea data={userData}/>
 
                 <section className="p-12">{switchLogic(activeTab)}</section>
               </motion.div>
