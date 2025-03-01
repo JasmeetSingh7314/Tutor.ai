@@ -1,0 +1,4 @@
+/.env
+/.venv
+/src/misc
+node_modules

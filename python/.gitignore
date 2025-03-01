@@ -1,0 +1,6 @@
+.env
+.ZerePy/.env
+app
+app/agents/__pycache__
+app/utils/__pycache__
+.venv
