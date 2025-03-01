@@ -10,8 +10,10 @@ router.post("/create-material", (req, res) => {
 });
 router.get("/get-material/:id", (req, res) => {
   const id = req.params.id;
-  // const fieldName = req.query.fieldName;
   handler.getMaterial(req, res, id);
+});
+router.put("/update-material", (req, res) => {
+  handler.updateMaterial(req, res);
 });
 
 module.exports = router;

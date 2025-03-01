@@ -1,8 +1,6 @@
-/.env
-/.venv
-/app/misc
-/app/__pycache__
-/app/agents/__pycache__
-/app/models/__pycache__
-/app/utils/__pycache__
-/.vscode
+.env
+.ZerePy/.env
+app
+app/agents/__pycache__
+app/utils/__pycache__
+.venv
