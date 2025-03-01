@@ -56,18 +56,19 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isThinking }) => {
               </div>
             )}
             <div
-              className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+              className={`max-w-[100%] rounded-2xl px-4 py-3 ${
                 message.sender === "user"
                   ? "bg-green-500/90 text-black backdrop-blur-sm"
-                  : "bg-zinc-800/80 text-white backdrop-blur-sm"
+                  : "bg-zinc-800/80 w-96 text-white backdrop-blur-sm"
               }`}
             >
               <ReactMarkdown>{message.text}</ReactMarkdown>
-              {message.sender === "ai" &&
-                message.wordDetails &&
-                message.wordDetails.map((word) => (
-                  <JapaneseWordCard wordDetails={word.word_details} />
-                ))}
+              {message.sender === "ai" && message.wordDetails && (
+                <JapaneseWordCard
+                  wordDetails={message?.wordDetails[0]?.word_details}
+                  words={message?.wordDetails}
+                />
+              )}
             </div>
             {message.sender === "user" && (
               <div className="h-8 w-8 rounded-full bg-zinc-700 flex items-center justify-center font-medium text-white ml-4">

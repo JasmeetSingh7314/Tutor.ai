@@ -1,4 +1,8 @@
+import { Button } from "@heroui/react";
+import { stat } from "fs";
+import { ArrowRight } from "lucide-react";
 import type React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface WordDetailsProps {
   wordDetails: {
@@ -9,11 +13,19 @@ interface WordDetailsProps {
     component_meanings?: string[];
     literal_meaning?: string;
   };
+  words: any;
 }
 
-const JapaneseWordCard: React.FC<WordDetailsProps> = ({ wordDetails }) => {
+const JapaneseWordCard: React.FC<WordDetailsProps> = ({
+  wordDetails,
+  words,
+}) => {
+  const navigate = useNavigate();
+  const handlePress = () => {
+    navigate("/lesson", { state: { lesson: words } });
+  };
   return (
-    <div className="relative max-w-md mx-auto my-4 overflow-hidden rounded-xl backdrop-blur-md bg-white/10 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
+    <div className="flex flex-col relative max-w-md mx-auto my-4 overflow-hidden rounded-xl backdrop-blur-md bg-white/10 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-green-400/20 rounded-full blur-3xl"></div>
       <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-400/20 rounded-full blur-3xl"></div>
 
@@ -55,6 +67,15 @@ const JapaneseWordCard: React.FC<WordDetailsProps> = ({ wordDetails }) => {
           </div>
         )}
       </div>
+      <Button
+        variant="ghost"
+        className="justify-end"
+        onPress={() => {
+          handlePress();
+        }}
+      >
+        <ArrowRight></ArrowRight>
+      </Button>
     </div>
   );
 };

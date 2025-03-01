@@ -1,4 +1,4 @@
-export const chat = async (message: string, system: string) => {
+export const chat = async (message: string, userId: string) => {
   try {
     const LessonbodyData = {
       connection: "tutor",
@@ -30,7 +30,7 @@ export const chat = async (message: string, system: string) => {
     };
     console.log(message);
     const response = await fetch(
-      "http://localhost:3000/api/message/send-message",
+      `http://localhost:3000/api/message/send-message/${userId}`,
       {
         method: "POST",
         headers: {

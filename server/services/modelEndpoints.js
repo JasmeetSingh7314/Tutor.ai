@@ -50,10 +50,12 @@ const generateText = async (message, language) => {
 
 const generateLesson = async (language, level, knownWords) => {
   try {
+    const knownWordsString = knownWords.join(" ");
+
     const lesson = {
       connection: "tutor",
       action: "generate-lesson",
-      params: [language, level, knownWords],
+      params: [language, level, knownWordsString],
     };
     config = {
       headers: {

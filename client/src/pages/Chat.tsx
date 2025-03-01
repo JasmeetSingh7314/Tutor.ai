@@ -21,7 +21,6 @@ function Chat() {
   const [toggle, setToggle] = useState<boolean>();
   const userState = useLocation().state;
 
-
   const toggleRef = useRef(true);
 
   useEffect(() => {
@@ -44,12 +43,13 @@ function Chat() {
       const userMessages = messages.filter(
         (element) => element.sender === "user"
       );
+      const userId = userState.userData._id;
       const aiMessages = messages.filter((element) => element.sender === "ai");
       if (userMessages.length) {
         const usertext = userMessages[userMessages.length - 1].text;
         const agenttext = aiMessages[aiMessages.length - 1].text;
         setIsThinking(true);
-        const response = await chat(usertext, agenttext);
+        const response = await chat(usertext, userId);
         console.log(response);
         setMessages((prev) => [
           ...prev,

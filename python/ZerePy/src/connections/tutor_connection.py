@@ -139,10 +139,10 @@ class TutorConnection(BaseConnection):
                 logger.debug(f"Configuration check failed: {e}")
             return False
 
-    def generate_lesson(self, Language:str,Level:str,KnownWords:list[str], **kwargs) -> str:
+    def generate_lesson(self, Language:str,Level:str,KnownWords:str, **kwargs) -> str:
         """Generate Lessons"""
         """Function to create the language lesson"""
-
+     
         logger.info("Generating Lesson")
         print("language is:",Language,Level,KnownWords)
         
