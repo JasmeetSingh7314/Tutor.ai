@@ -13,6 +13,8 @@ const userSchema = new Schema(
     knownWords: [String],
     reviewWords: [String],
     weaknesses: [{ type: Object }],
+    completedLessons: [{ type: String }],
+    completedQuizzes: [{ type: Schema.Types.ObjectId, ref: "quiz" }],
   },
   { timestamps: true }
 );

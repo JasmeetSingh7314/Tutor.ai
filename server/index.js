@@ -4,6 +4,9 @@ const { connectDB } = require("./utils/connectDB");
 const { initModel } = require("./services/modelEndpoints");
 const userRouter = require("./routes/userRoutes");
 const materialRouter = require("./routes/materialRoutes");
+const lessonRouter = require("./routes/lessonRoutes");
+const quizRouter = require("./routes/quizRoutes");
+
 
 const messageRouter = require("./routes/messageRoutes");
 
@@ -16,6 +19,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use("/api/users", userRouter);
 app.use("/api/material", materialRouter);
+app.use("/api/lesson", lessonRouter);
+app.use("/api/quiz", quizRouter);
 app.use("/api/message", messageRouter);
 app.options("*", (req, res) => {
   res.set("Access-Control-Allow-Origin", "*");

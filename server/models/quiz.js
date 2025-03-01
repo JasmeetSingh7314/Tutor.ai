@@ -10,7 +10,7 @@ const quizSchema = new Schema(
       default: "PENDING",
     },
     metadata: { type: Object },
-    result: { type: Object },
+    resgiult: { type: Object },
   },
   { timestamps: true }
 );
