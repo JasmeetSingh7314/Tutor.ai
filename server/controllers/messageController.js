@@ -1,9 +1,6 @@
 const { findIntent, generateText } = require("../services/modelEndpoints");
 const { generateLesson } = require("../services/modelEndpoints");
-<<<<<<< HEAD
-=======
 const mongoose = require("mongoose");
->>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
 
 class messageHandler {
   constructor(userModel, materialModel) {

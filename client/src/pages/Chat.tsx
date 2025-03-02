@@ -3,17 +3,10 @@ import { Message, Conversation } from "../types";
 import Sidebar from "../components/chat/Sidebar";
 import Header from "../components/chat/Header";
 import MessageList from "../components/chat/MessageList";
-<<<<<<< HEAD
-import MessageInput from "../components/chat/MessageInput";
-import { chat } from "../apis/chat/chat";
-import { useLocation } from "react-router-dom";
-import ChatInput from "@/components/chat/chatSuggestions";
-=======
 import { chat } from "../apis/chat/chat";
 import { useLocation } from "react-router-dom";
 import ChatInput from "@/components/chat/chatSuggestions";
 import { updateMessage } from "@/apis/chat/updateMessages";
->>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
 
 function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -28,7 +21,7 @@ function Chat() {
   const [toggle, setToggle] = useState<boolean>();
   const userState = useLocation().state;
 
-  const toggleRef = useRef(true);
+  const toggleRef = useRef(false);
 
   useEffect(() => {
     const saveConversation = async () => {
@@ -57,7 +50,7 @@ function Chat() {
     if (messages.length > 0) {
       saveConversation();
     }
-  }, [messages]);
+  }, [toggle]);
 
   // Initial welcome message
   useEffect(() => {
@@ -69,23 +62,6 @@ function Chat() {
         timestamp: new Date(),
       },
     ]);
-<<<<<<< HEAD
-    setMessages((prev) => [...prev, userState.userMessage]);
-    setToggle(!toggle);
-  }, []);
-
-  useEffect(() => {
-    const getMessageResponse = async () => {
-      console.log(messages);
-      const userMessages = messages.filter(
-        (element) => element.sender === "user"
-      );
-      const userId = userState.userData._id;
-      const aiMessages = messages.filter((element) => element.sender === "ai");
-      if (userMessages.length) {
-        const usertext = userMessages[userMessages.length - 1].text;
-        const agenttext = aiMessages[aiMessages.length - 1].text;
-=======
     if (userState.userMessage) {
       setMessages((prev) => [...prev, userState.userMessage]);
     }
@@ -100,9 +76,9 @@ function Chat() {
 
       if (userMessages.length) {
         const userText = userMessages[userMessages.length - 1].text;
->>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
+        console.log(userMessages);
         setIsThinking(true);
-        const response = await chat(usertext, userId);
+        const response = await chat(userText, userId);
         console.log("Chat data", response);
         setMessages((prev) => [
           ...prev,
@@ -117,13 +93,6 @@ function Chat() {
 
         setResult(response.data);
         setIsThinking(false);
-<<<<<<< HEAD
-      }
-    };
-    if (toggleRef.current) {
-      toggleRef.current = false;
-      return;
-=======
 
         try {
           const response = await chat(userText, userId);
@@ -148,16 +117,12 @@ function Chat() {
 
     if (toggleRef.current) {
       toggleRef.current = false;
->>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
     } else {
       getMessageResponse();
     }
   }, [toggle]);
 
-<<<<<<< HEAD
-=======
   // Handle user sending a message
->>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
   const handleSendMessage = (text: string) => {
     setToggle(!toggle);
     const newMessage: Message = {
@@ -166,10 +131,6 @@ function Chat() {
       sender: "user",
       timestamp: new Date(),
     };
-<<<<<<< HEAD
-
-=======
->>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
     setMessages((prev) => [...prev, newMessage]);
     setIsThinking(true);
   };
@@ -192,13 +153,6 @@ function Chat() {
           <div className="flex-1 flex flex-col overflow-hidden">
             <MessageList messages={messages} isThinking={isThinking} />
             <ChatInput onSendMessage={handleSendMessage} />
-<<<<<<< HEAD
-            {/* <MessageInput
-              onSendMessage={handleSendMessage}
-              data={userState.userData}
-            /> */}
-=======
->>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
           </div>
         </div>
       </div>
