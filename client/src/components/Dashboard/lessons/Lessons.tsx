@@ -79,6 +79,7 @@ const Lessons = () => {
         {lessonData?.map((lesson, index) => (
           <LessonCard
             lesson={lesson}
+            key={index}
             index={index}
             data={lessonData[index]?.lesson}
           />

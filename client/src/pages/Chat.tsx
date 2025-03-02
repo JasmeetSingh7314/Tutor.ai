@@ -21,7 +21,7 @@ function Chat() {
   const [toggle, setToggle] = useState<boolean>();
   const userState = useLocation().state;
 
-  const toggleRef = useRef(true);
+  const toggleRef = useRef(false);
 
   useEffect(() => {
     const saveConversation = async () => {
@@ -50,7 +50,7 @@ function Chat() {
     if (messages.length > 0) {
       saveConversation();
     }
-  }, [messages]);
+  }, [toggle]);
 
   // Initial welcome message
   useEffect(() => {
@@ -76,8 +76,9 @@ function Chat() {
 
       if (userMessages.length) {
         const userText = userMessages[userMessages.length - 1].text;
+        console.log(userMessages);
         setIsThinking(true);
-        const response = await chat(usertext, userId);
+        const response = await chat(userText, userId);
         console.log("Chat data", response);
         setMessages((prev) => [
           ...prev,
