@@ -1,5 +1,8 @@
-const { default: mongoose } = require("mongoose");
+const { Schema } = require("mongoose");
 
-const progress = mongoose.Schema({
+const progress = Schema({
   createdBy: { type: Schema.Types.ObjectId, ref: "users" },
+  level:{type:Number},
+  tier:{type:String},
+  
 });

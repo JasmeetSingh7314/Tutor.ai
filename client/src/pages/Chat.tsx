@@ -50,7 +50,7 @@ function Chat() {
         const agenttext = aiMessages[aiMessages.length - 1].text;
         setIsThinking(true);
         const response = await chat(usertext, userId);
-        console.log(response);
+        console.log("Chat data", response);
         setMessages((prev) => [
           ...prev,
           {
@@ -58,7 +58,7 @@ function Chat() {
             text: response.message,
             sender: "ai",
             timestamp: new Date(),
-            wordDetails: response?.data?.vocab,
+            wordDetails: response?.data,
           },
         ]);
 
@@ -88,9 +88,9 @@ function Chat() {
   };
 
   return (
-    <div className="flex h-screen bg-zinc-950 text-white overflow-hidden">
+    <div className="flex h-screen bg-zinc-950 text-white overflow-hidden font-nunito">
       {/* Sidebar */}
-      <Sidebar conversations={conversations} />
+      <Sidebar conversations={conversations} user={userState.userData} />
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col bg-zinc-950 relative">
@@ -101,7 +101,7 @@ function Chat() {
 
         {/* Content */}
         <div className="relative flex flex-col h-full z-10">
-          <Header language={userState} />
+          <Header language={userState?.userData} />
           <div className="flex-1 flex flex-col overflow-hidden">
             <MessageList messages={messages} isThinking={isThinking} />
             <ChatInput onSendMessage={handleSendMessage} />

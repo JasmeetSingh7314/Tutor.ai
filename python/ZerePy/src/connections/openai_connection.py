@@ -164,6 +164,7 @@ class OpenAIConnection(BaseConnection):
                 ),
                 mode=instructor.Mode.JSON
             )
+            print(self)
             system_prompt=f"I'm your {Language} tutor. How can I help you today? We can practice conversations, learn new vocabulary, or review grammar concepts."
             print(prompt,system_prompt)
             # # Use configured model if none provided

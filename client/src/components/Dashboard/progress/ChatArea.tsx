@@ -24,7 +24,6 @@ const ChatArea = (data: any) => {
     };
 
     setInput("");
-    console.log(data?.data);
     navigate("/chat", {
       state: {
         userData: data?.data,

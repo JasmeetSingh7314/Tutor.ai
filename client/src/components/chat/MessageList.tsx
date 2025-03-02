@@ -1,14 +1,14 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import JapaneseWordCard from "./japanese_card";
+import LangCard from "./LangCard";
 
 type Message = {
   id: string;
   text: string;
   sender: "ai" | "user";
   timestamp: Date;
-  wordDetails: any[];
+  wordDetails: any;
 };
 
 interface MessageListProps {
@@ -19,7 +19,7 @@ interface MessageListProps {
 const MessageList: React.FC<MessageListProps> = ({ messages, isThinking }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [shouldScroll, setShouldScroll] = useState(true);
-
+  console.log();
   // const scrollToBottom = () => {
   //   if (shouldScroll && messagesEndRef.current) {
   //     messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -42,7 +42,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isThinking }) => {
 
   return (
     <div className="flex-1 overflow-y-auto" onScroll={handleScroll}>
-      <div className="max-w-3xl mx-auto py-6 px-4">
+      <div className="max-w-4xl mx-auto py-6 px-4">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -64,8 +64,8 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isThinking }) => {
             >
               <ReactMarkdown>{message.text}</ReactMarkdown>
               {message.sender === "ai" && message.wordDetails && (
-                <JapaneseWordCard
-                  wordDetails={message?.wordDetails[0]?.word_details}
+                <LangCard
+                  wordDetails={message?.wordDetails?.vocab[0]?.word_details}
                   words={message?.wordDetails}
                 />
               )}

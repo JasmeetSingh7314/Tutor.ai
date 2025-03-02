@@ -25,18 +25,18 @@ class messageHandler {
             user.knownWords
           );
 
-          const userId = user._id;
-          const existingMaterial = await this.Material.findOne({ userId });
-          if (existingMaterial) {
-            const updateFields = {};
+          // const userId = user._id;
+          // const existingMaterial = await this.Material.findOne({ userId });
+          // if (existingMaterial) {
+          //   const updateFields = {};
 
-            if (lesson) {
-              updateFields.$push = { lesson: { lesson: lesson } };
-            }
-          }
-          if (Object.keys(updateFields).length > 0) {
-            await this.Material.updateOne({ userId }, updateFields);
-          }
+          //   if (lesson) {
+          //     updateFields.$push = { lesson: { lesson: lesson } };
+          //   }
+          // }
+          // if (Object.keys(updateFields).length > 0) {
+          //   await this.Material.updateOne({ userId }, updateFields);
+          // }
 
           return res.send({
             success: true,
@@ -47,7 +47,7 @@ class messageHandler {
         case "word meanings":
           console.log("word-meaning");
         case "general":
-          const baseResponse = await generateText(message, "Japanese");
+          const baseResponse = await generateText(message, user.targetLanguage);
           return res.send({
             success: true,
             intent: intent,

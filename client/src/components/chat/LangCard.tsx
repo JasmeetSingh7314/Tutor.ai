@@ -1,3 +1,4 @@
+import { updateMaterial } from "@/apis/materials/updateMaterial";
 import { Button } from "@heroui/react";
 import { stat } from "fs";
 import { ArrowRight } from "lucide-react";
@@ -16,13 +17,25 @@ interface WordDetailsProps {
   words: any;
 }
 
-const JapaneseWordCard: React.FC<WordDetailsProps> = ({
-  wordDetails,
-  words,
-}) => {
+const LangCard: React.FC<WordDetailsProps> = ({ wordDetails, words }) => {
   const navigate = useNavigate();
-  const handlePress = () => {
-    navigate("/lesson", { state: { lesson: words } });
+  const handlePress = async () => {
+    const userInfo =
+      localStorage.getItem("userDetails") !== null
+        ? JSON.parse(localStorage.getItem("userDetails"))
+        : "";
+
+    const userId = userInfo._id;
+
+    try {
+      const response = await updateMaterial(userId, words, {});
+      const result = response.json();
+      console.log(result);
+    } catch (err) {
+      console.error(err);
+    }
+
+    navigate("/lesson", { state: { lesson: words.vocab, isNew: true } });
   };
   return (
     <div className="flex flex-col relative max-w-md mx-auto my-4 overflow-hidden rounded-xl backdrop-blur-md bg-white/10 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
@@ -74,10 +87,11 @@ const JapaneseWordCard: React.FC<WordDetailsProps> = ({
           handlePress();
         }}
       >
+        <span className="text-gray-200">Click </span>
         <ArrowRight></ArrowRight>
       </Button>
     </div>
   );
 };
 
-export default JapaneseWordCard;
+export default LangCard;
