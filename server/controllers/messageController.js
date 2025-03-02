@@ -1,5 +1,9 @@
 const { findIntent, generateText } = require("../services/modelEndpoints");
 const { generateLesson } = require("../services/modelEndpoints");
+<<<<<<< HEAD
+=======
+const mongoose = require("mongoose");
+>>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
 
 class messageHandler {
   constructor(userModel, materialModel) {
@@ -65,6 +69,42 @@ class messageHandler {
 
     if (findUser) {
       const savemessage = await this.User.create(id, {});
+    }
+  }
+
+  async updateMessages(req, res) {
+    const { userID, name, messages } = req.body;
+
+    try {
+      const newConversation = {
+        id: new mongoose.Types.ObjectId(),
+        name,
+        messages,
+      };
+      const updatedUser = await this.User.findByIdAndUpdate(
+        userID,
+        {
+          $push: { conversations: newConversation },
+        },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({
+          message: "user not found",
+        });
+      }
+
+      res.status(201).json({
+        success: true,
+        message: "Conversation added successfully",
+        data: updatedUser,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
     }
   }
   async getConvos(req, res, id) {}

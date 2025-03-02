@@ -10,4 +10,8 @@ router.post("/send-message/:id", (req, res) => {
   handler.messageIntent(req, res);
 });
 
+router.post("/update-messages", (req, res) => {
+  handler.updateMessages(req, res);
+});
+
 module.exports = router;

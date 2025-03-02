@@ -3,10 +3,17 @@ import { Message, Conversation } from "../types";
 import Sidebar from "../components/chat/Sidebar";
 import Header from "../components/chat/Header";
 import MessageList from "../components/chat/MessageList";
+<<<<<<< HEAD
 import MessageInput from "../components/chat/MessageInput";
 import { chat } from "../apis/chat/chat";
 import { useLocation } from "react-router-dom";
 import ChatInput from "@/components/chat/chatSuggestions";
+=======
+import { chat } from "../apis/chat/chat";
+import { useLocation } from "react-router-dom";
+import ChatInput from "@/components/chat/chatSuggestions";
+import { updateMessage } from "@/apis/chat/updateMessages";
+>>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
 
 function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -24,15 +31,45 @@ function Chat() {
   const toggleRef = useRef(true);
 
   useEffect(() => {
-    // Initial welcome message
+    const saveConversation = async () => {
+      const userId = userState.userData._id;
+      const conversationData = {
+        name: "chat",
+        messages: messages.map((msg) => ({
+          sender: msg.sender,
+          text: msg.text,
+          timestamp: msg.timestamp,
+        })),
+      };
+
+      try {
+        const result = await updateMessage(
+          userId,
+          conversationData.name,
+          conversationData.messages
+        );
+        console.log("Real-time save:", result);
+      } catch (error) {
+        console.error("Failed to save conversation:", error);
+      }
+    };
+
+    if (messages.length > 0) {
+      saveConversation();
+    }
+  }, [messages]);
+
+  // Initial welcome message
+  useEffect(() => {
     setMessages([
       {
         id: "1",
-        text: ` I'm your ${userState.userData.targetLanguage} language tutor. How can I help you today? We can practice conversations, learn new vocabulary, or review grammar concepts.`,
+        text: `I'm your ${userState.userData.targetLanguage} language tutor. How can I help you today? We can practice conversations, learn new vocabulary, or review grammar concepts.`,
         sender: "ai",
         timestamp: new Date(),
       },
     ]);
+<<<<<<< HEAD
     setMessages((prev) => [...prev, userState.userMessage]);
     setToggle(!toggle);
   }, []);
@@ -48,6 +85,22 @@ function Chat() {
       if (userMessages.length) {
         const usertext = userMessages[userMessages.length - 1].text;
         const agenttext = aiMessages[aiMessages.length - 1].text;
+=======
+    if (userState.userMessage) {
+      setMessages((prev) => [...prev, userState.userMessage]);
+    }
+    setToggle(!toggle);
+  }, [userState]);
+
+  // Handle AI responses
+  useEffect(() => {
+    const getMessageResponse = async () => {
+      const userMessages = messages.filter((msg) => msg.sender === "user");
+      const userId = userState.userData._id;
+
+      if (userMessages.length) {
+        const userText = userMessages[userMessages.length - 1].text;
+>>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
         setIsThinking(true);
         const response = await chat(usertext, userId);
         console.log("Chat data", response);
@@ -64,16 +117,47 @@ function Chat() {
 
         setResult(response.data);
         setIsThinking(false);
+<<<<<<< HEAD
       }
     };
     if (toggleRef.current) {
       toggleRef.current = false;
       return;
+=======
+
+        try {
+          const response = await chat(userText, userId);
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: messages.length.toString(),
+              text: response.message,
+              sender: "ai",
+              timestamp: new Date(),
+              wordDetails: response?.data?.vocab,
+            },
+          ]);
+          setResult(response.data);
+        } catch (error) {
+          console.error("Error fetching AI response:", error);
+        } finally {
+          setIsThinking(false);
+        }
+      }
+    };
+
+    if (toggleRef.current) {
+      toggleRef.current = false;
+>>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
     } else {
       getMessageResponse();
     }
   }, [toggle]);
 
+<<<<<<< HEAD
+=======
+  // Handle user sending a message
+>>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
   const handleSendMessage = (text: string) => {
     setToggle(!toggle);
     const newMessage: Message = {
@@ -82,7 +166,10 @@ function Chat() {
       sender: "user",
       timestamp: new Date(),
     };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
     setMessages((prev) => [...prev, newMessage]);
     setIsThinking(true);
   };
@@ -105,10 +192,13 @@ function Chat() {
           <div className="flex-1 flex flex-col overflow-hidden">
             <MessageList messages={messages} isThinking={isThinking} />
             <ChatInput onSendMessage={handleSendMessage} />
+<<<<<<< HEAD
             {/* <MessageInput
               onSendMessage={handleSendMessage}
               data={userState.userData}
             /> */}
+=======
+>>>>>>> 916d86ae58b331cd5728bd2dc22a79291564282f
           </div>
         </div>
       </div>
