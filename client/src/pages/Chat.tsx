@@ -27,7 +27,6 @@ function Chat() {
     const saveConversation = async () => {
       const userId = userState.userData._id;
       const conversationData = {
-        name: "chat",
         messages: messages.map((msg) => ({
           sender: msg.sender,
           text: msg.text,
@@ -36,12 +35,13 @@ function Chat() {
       };
 
       try {
-        const result = await updateMessage(
+        const result1 = await updateMessage(
           userId,
-          conversationData.name,
-          conversationData.messages
+
+          conversationData.messages,
+          result
         );
-        console.log("Real-time save:", result);
+        console.log("Real-time save:", result1);
       } catch (error) {
         console.error("Failed to save conversation:", error);
       }

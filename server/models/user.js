@@ -17,9 +17,8 @@ const userSchema = new Schema(
     completedQuizzes: [{ type: Schema.Types.ObjectId, ref: "quiz" }],
     conversations: [
       {
-        id: { type: Schema.Types.ObjectId, ref: "auto" },
-        name: { type: String },
-        messages: [{ type: Object }],
+        userQuestion: { type: String },
+        aiAnswer: { type: String },
       },
     ],
   },

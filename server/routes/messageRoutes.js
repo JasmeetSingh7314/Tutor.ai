@@ -11,7 +11,10 @@ router.post("/send-message/:id", (req, res) => {
 });
 
 router.post("/update-messages", (req, res) => {
-  handler.updateMessages(req, res);
+  handler.addConversation(req, res);
+});
+router.get("/get-messages", (req, res) => {
+  handler.getConversations(req, res);
 });
 
 module.exports = router;

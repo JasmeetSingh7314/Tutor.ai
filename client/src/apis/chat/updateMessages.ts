@@ -1,6 +1,7 @@
 export const updateMessage = async (
+  aiAnswer: string,
+  userQuestion: string,
   userID: string,
-  name: string,
   messages: any
 ) => {
   try {
@@ -11,7 +12,7 @@ export const updateMessage = async (
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userID, name, messages }),
+        body: JSON.stringify({ userID, userQuestion, aiAnswer }),
       }
     );
 

@@ -69,33 +69,53 @@ class messageHandler {
     }
   }
 
-  async updateMessages(req, res) {
-    const { userID, name, messages } = req.body;
+  async addConversation(req, res) {
+    const { userID, userQuestion, aiAnswer } = req.body;
 
     try {
-      const newConversation = {
-        id: new mongoose.Types.ObjectId(),
-        name,
-        messages,
-      };
-      const updatedUser = await this.User.findByIdAndUpdate(
-        userID,
-        {
-          $push: { conversations: newConversation },
-        },
-        { new: true }
-      );
+      const user = await this.User.findById(userID);
 
-      if (!updatedUser) {
+      if (!user) {
         return res.status(404).json({
-          message: "user not found",
+          success: false,
+          message: "User not found",
         });
       }
+
+      user.conversations.push({ userQuestion, aiAnswer });
+
+      const updatedUser = await user.save();
 
       res.status(201).json({
         success: true,
         message: "Conversation added successfully",
         data: updatedUser,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  async getConversations(req, res) {
+    const { userID } = req.params;
+
+    try {
+      const user = await this.User.findById(userID);
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "Conversations retrieved successfully",
+        data: user.conversations,
       });
     } catch (error) {
       res.status(500).json({
