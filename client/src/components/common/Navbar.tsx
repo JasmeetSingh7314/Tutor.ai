@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { ConnectWallet } from "../connectWallet";
@@ -6,7 +6,13 @@ import { ConnectWallet } from "../connectWallet";
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [user, setUser] = useState<boolean>();
   const { scrollY } = useScroll();
+
+  useEffect(() => {
+    const wallet = localStorage.getItem("walletAddress");
+    wallet === null ? setUser(false) : setUser(true);
+  });
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious();
@@ -18,9 +24,8 @@ export const Navbar = () => {
   });
 
   const navItems = [
-    { name: "features", href: "#features" },
-    { name: "about", href: "#about" },
-    { name: "pricing", href: "#pricing" },
+    { name: "Profile", href: "/profile" },
+    { name: "Chat", href: "/chat" },
   ];
 
   return (
@@ -43,16 +48,22 @@ export const Navbar = () => {
           </div>
 
           <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-8">
-              {navItems.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-gray-300 hover:text-[#22B357] transition-colors"
-                ></a>
-              ))}
+            {user ? (
+              <div className="ml-10 flex items-center space-x-8">
+                {navItems.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className="text-gray-300 font-semibold font-nunito hover:text-[#22B357] active:text-[#22B357]  transition-colors"
+                  >
+                    {item.name}
+                  </a>
+                ))}
+                <ConnectWallet />
+              </div>
+            ) : (
               <ConnectWallet />
-            </div>
+            )}
           </div>
 
           <div className="md:hidden">

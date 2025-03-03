@@ -49,7 +49,7 @@ const Lesson = () => {
   };
 
   return (
-    <main className="flex flex-col gap-y-12">
+    <main className="flex flex-col gap-y-12 font-nunito">
       <Navbar />
       <div className="min-h-screen bg-background text-foreground transition-colors duration-300 ">
         <main className="container mx-auto px-4 py-20 mt-24">

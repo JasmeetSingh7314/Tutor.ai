@@ -1,7 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Lesson from "./pages/Lesson";
-
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import { Navbar } from "@heroui/react";
@@ -14,17 +13,42 @@ function App() {
     <BrowserRouter>
       <Navbar />
       <Routes>
+        {/* Home Route */}
         <Route path="/" element={<Home />} />
 
-        <Route path="/lesson" element={<Lesson />} />
-        <Route path="/quiz" element={<QuizPage />} />
+        {/* Onboarding Route */}
         <Route path="/sign-up" element={<Onboarding />} />
-        <Route path="/chat" element={<Chat />} />
+
+        {/* Protected Routes */}
         <Route
           path="/profile"
           element={
             <ProtectedRoutes>
               <Dashboard />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/lesson"
+          element={
+            <ProtectedRoutes>
+              <Lesson />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/quiz"
+          element={
+            <ProtectedRoutes>
+              <QuizPage />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoutes>
+              <Chat />
             </ProtectedRoutes>
           }
         />

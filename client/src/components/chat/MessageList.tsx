@@ -21,16 +21,20 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isThinking }) => {
   const [shouldScroll, setShouldScroll] = useState(true);
 
   console.log("Messages are:", messages);
-  // const scrollToBottom = () => {
-  //   if (shouldScroll && messagesEndRef.current) {
-  //     messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-  //   }
-  // };
+  const scrollToBottom = () => {
+    if (shouldScroll && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     // Only auto-scroll when new messages arrive
     const lastMessage = messages[messages.length - 1];
-    // setShouldScroll(lastMessage?.sender === 'user' || lastMessage?.sender === 'ai' || isThinking);
+    setShouldScroll(
+      lastMessage?.sender === "user" ||
+        lastMessage?.sender === "ai" ||
+        isThinking
+    );
   }, [messages, isThinking]);
 
   // Handle scroll events to determine if user has scrolled up
@@ -40,9 +44,16 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isThinking }) => {
     const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
     setShouldScroll(isNearBottom);
   };
+ 
 
+   // Scroll to the bottom when messages change
+   useEffect(() => {
+     if (messagesEndRef.current) {
+       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+     }
+   }, [messages]);
   return (
-    <div className="flex-1 overflow-y-auto" onScroll={handleScroll}>
+    <div className="flex-1 overflow-y-auto">
       <div className="max-w-4xl mx-auto py-6 px-4">
         {messages.map((message, index) => (
           <div
@@ -89,6 +100,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isThinking }) => {
             </div>
           </div>
         )}
+
         <div ref={messagesEndRef} />
       </div>
     </div>
