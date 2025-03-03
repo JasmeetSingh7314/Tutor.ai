@@ -1,3 +1,4 @@
+import { updateMessage } from "@/apis/chat/updateMessages";
 import { Send } from "lucide-react";
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -15,13 +16,19 @@ const ChatArea = (data: any) => {
     },
   ];
 
-  const handleOnSend = () => {
+  const handleOnSend = async () => {
     const newMessage = {
       id: Date.now().toString(),
       text: input,
       sender: "user",
       timestamp: new Date(),
     };
+    try {
+      const saveMessage = await updateMessage(data?.data._id, newMessage);
+      console.log(saveMessage);
+    } catch (err) {
+      console.log(err);
+    }
 
     setInput("");
     navigate("/chat", {

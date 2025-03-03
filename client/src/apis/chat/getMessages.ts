@@ -1,22 +1,12 @@
-export const chat = async (message: string, system: string) => {
+export const getMessages = async (userId: string) => {
   try {
-    // const intent_check = {
-    //   connection: "openai",
-    //   action: "find-intent",
-    //   params: [message],
-    // };
-    const messageData = {
-      message: message,
-    };
-    console.log(message);
     const response = await fetch(
-      "http://localhost:3000/api/message/send-message",
+      `http://localhost:3000/api/message/get-messages/${userId}`,
       {
-        method: "POST",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(messageData),
       }
     );
 

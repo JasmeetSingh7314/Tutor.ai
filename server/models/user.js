@@ -15,12 +15,7 @@ const userSchema = new Schema(
     weaknesses: [{ type: Object }],
     completedLessons: [{ type: String }],
     completedQuizzes: [{ type: Schema.Types.ObjectId, ref: "quiz" }],
-    conversations: [
-      {
-        userQuestion: { type: String },
-        aiAnswer: { type: String },
-      },
-    ],
+    conversations: [{ type: Object }],
   },
   { timestamps: true }
 );

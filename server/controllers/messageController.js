@@ -15,7 +15,7 @@ class messageHandler {
 
       const intent = await findIntent(message);
 
-      console.log("THe intent is", intent);
+      if (intent.result) console.log("THe intent is", intent);
 
       const user = await this.User.findById(id);
       switch (intent.result) {
@@ -48,7 +48,11 @@ class messageHandler {
         case "word meanings":
           console.log("word-meaning");
         case "general":
-          const baseResponse = await generateText(message, user.targetLanguage);
+          const baseResponse = await generateText(
+            message,
+            user.targetLanguage,
+            user.conversations
+          );
           return res.send({
             success: true,
             intent: intent,
@@ -70,21 +74,21 @@ class messageHandler {
   }
 
   async addConversation(req, res) {
-    const { userID, userQuestion, aiAnswer } = req.body;
+    const { userID, messages } = req.body;
 
     try {
-      const user = await this.User.findById(userID);
+      const userInfo = await this.User.findById(userID);
 
-      if (!user) {
+      if (!userInfo) {
         return res.status(404).json({
           success: false,
           message: "User not found",
         });
       }
 
-      user.conversations.push({ userQuestion, aiAnswer });
+      userInfo.conversations.push(messages);
 
-      const updatedUser = await user.save();
+      const updatedUser = await userInfo.save();
 
       res.status(201).json({
         success: true,
@@ -100,10 +104,10 @@ class messageHandler {
   }
 
   async getConversations(req, res) {
-    const { userID } = req.params;
+    const { id } = req.params;
 
     try {
-      const user = await this.User.findById(userID);
+      const user = await this.User.findById(id);
 
       if (!user) {
         return res.status(404).json({
@@ -124,7 +128,6 @@ class messageHandler {
       });
     }
   }
-  async getConvos(req, res, id) {}
   async updateConvos(req, res, id) {
     const { messages } = req.body;
 

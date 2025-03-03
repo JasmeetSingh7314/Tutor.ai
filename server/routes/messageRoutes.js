@@ -10,10 +10,10 @@ router.post("/send-message/:id", (req, res) => {
   handler.messageIntent(req, res);
 });
 
-router.post("/update-messages", (req, res) => {
+router.put("/update-messages", (req, res) => {
   handler.addConversation(req, res);
 });
-router.get("/get-messages", (req, res) => {
+router.get("/get-messages/:id", (req, res) => {
   handler.getConversations(req, res);
 });
 

@@ -7,50 +7,44 @@ import { chat } from "../apis/chat/chat";
 import { useLocation } from "react-router-dom";
 import ChatInput from "@/components/chat/chatSuggestions";
 import { updateMessage } from "@/apis/chat/updateMessages";
+import { getMessages } from "@/apis/chat/getMessages";
 
 function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isThinking, setIsThinking] = useState(false);
-  const [conversations, setConversations] = useState<Conversation[]>([
-    { id: "1", title: "Basic Greetings in Korean", timestamp: new Date() },
-    { id: "2", title: "Numbers and Counting", timestamp: new Date() },
-    { id: "3", title: "Restaurant Vocabulary", timestamp: new Date() },
-  ]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   const [result, setResult] = useState();
 
   const [toggle, setToggle] = useState<boolean>();
   const userState = useLocation().state;
 
-  const toggleRef = useRef(false);
+  const toggleRef = useRef(true);
 
-  useEffect(() => {
-    const saveConversation = async () => {
-      const userId = userState.userData._id;
-      const conversationData = {
-        messages: messages.map((msg) => ({
-          sender: msg.sender,
-          text: msg.text,
-          timestamp: msg.timestamp,
-        })),
-      };
+  // useEffect(() => {
+  //   const saveConversation = async () => {
+  //     console.log("Save convo triggered");
+  //     const userId = userState.userData._id;
+  //     const conversationData = {
+  //       messages: messages.map((msg) => ({
+  //         sender: msg.sender,
+  //         text: msg.text,
+  //         timestamp: msg.timestamp,
+  //       })),
+  //     };
+  //     console.log(conversationData);
 
-      try {
-        const result1 = await updateMessage(
-          userId,
+  //     try {
+  //       const result1 = await updateMessage(userId, conversationData.messages);
+  //       console.log(result1);
+  //     } catch (error) {
+  //       // console.error("Failed to save conversation:", error);
+  //     }
+  //   };
 
-          conversationData.messages,
-          result
-        );
-        console.log("Real-time save:", result1);
-      } catch (error) {
-        console.error("Failed to save conversation:", error);
-      }
-    };
-
-    if (messages.length > 0) {
-      saveConversation();
-    }
-  }, [toggle]);
+  //   if (messages.length > 0) {
+  //     saveConversation();
+  //   }
+  // }, [toggle]);
 
   // Initial welcome message
   useEffect(() => {
@@ -65,21 +59,58 @@ function Chat() {
     if (userState.userMessage) {
       setMessages((prev) => [...prev, userState.userMessage]);
     }
+
+    const conversation = async () => {
+      try {
+        const userId = userState.userData._id;
+        const getConvo = await getMessages(userId);
+        console.log(getConvo);
+
+        setConversations(getConvo.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    conversation();
     setToggle(!toggle);
   }, [userState]);
 
   // Handle AI responses
   useEffect(() => {
     const getMessageResponse = async () => {
+      console.log("message requested!");
       const userMessages = messages.filter((msg) => msg.sender === "user");
       const userId = userState.userData._id;
 
       if (userMessages.length) {
         const userText = userMessages[userMessages.length - 1].text;
-        console.log(userMessages);
+        console.log("User messages:", userMessages);
+        //Thinking action set to true
         setIsThinking(true);
+        
+        //fetching response from the agent
         const response = await chat(userText, userId);
         console.log("Chat data", response);
+        const aiMessage = {
+          id: messages.length.toString(),
+          text: response.message,
+          sender: "ai",
+          timestamp: new Date(),
+          wordDetails: response?.data,
+        };
+        //saving the message
+        const saveMessage = await updateMessage(userId, aiMessage);
+        console.log("Message from agent:", saveMessage);
+        //refreshing the conservation state
+        try {
+          const userId = userState.userData._id;
+          const getConvo = await getMessages(userId);
+          console.log(getConvo);
+
+          setConversations(getConvo.data);
+        } catch (err) {
+          console.log(err);
+        }
         setMessages((prev) => [
           ...prev,
           {
@@ -92,26 +123,8 @@ function Chat() {
         ]);
 
         setResult(response.data);
+        //setting thinking to false
         setIsThinking(false);
-
-        try {
-          const response = await chat(userText, userId);
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: messages.length.toString(),
-              text: response.message,
-              sender: "ai",
-              timestamp: new Date(),
-              wordDetails: response?.data?.vocab,
-            },
-          ]);
-          setResult(response.data);
-        } catch (error) {
-          console.error("Error fetching AI response:", error);
-        } finally {
-          setIsThinking(false);
-        }
       }
     };
 
@@ -123,7 +136,7 @@ function Chat() {
   }, [toggle]);
 
   // Handle user sending a message
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = async (text: string) => {
     setToggle(!toggle);
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -131,6 +144,23 @@ function Chat() {
       sender: "user",
       timestamp: new Date(),
     };
+    try {
+      const userId = userState.userData._id;
+      const saveMessage = await updateMessage(userId, newMessage);
+
+      console.log("user message saved:", saveMessage);
+    } catch (error) {
+      console.error(error);
+    }
+    try {
+      const userId = userState.userData._id;
+      const getConvo = await getMessages(userId);
+      console.log(getConvo);
+
+      setConversations(getConvo.data);
+    } catch (err) {
+      console.log(err);
+    }
     setMessages((prev) => [...prev, newMessage]);
     setIsThinking(true);
   };
@@ -138,7 +168,7 @@ function Chat() {
   return (
     <div className="flex h-screen bg-zinc-950 text-white overflow-hidden font-nunito">
       {/* Sidebar */}
-      <Sidebar conversations={conversations} user={userState.userData} />
+      {/* <Sidebar conversations={conversations} user={userState.userData} /> */}
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col bg-zinc-950 relative">
@@ -151,7 +181,7 @@ function Chat() {
         <div className="relative flex flex-col h-full z-10">
           <Header language={userState?.userData} />
           <div className="flex-1 flex flex-col overflow-hidden">
-            <MessageList messages={messages} isThinking={isThinking} />
+            <MessageList messages={conversations} isThinking={isThinking} />
             <ChatInput onSendMessage={handleSendMessage} />
           </div>
         </div>

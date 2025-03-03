@@ -1,18 +1,13 @@
-export const updateMessage = async (
-  aiAnswer: string,
-  userQuestion: string,
-  userID: string,
-  messages: any
-) => {
+export const updateMessage = async (userID: string, messages: any) => {
   try {
     const response = await fetch(
       "http://localhost:3000/api/message/update-messages",
       {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userID, userQuestion, aiAnswer }),
+        body: JSON.stringify({ userID, messages }),
       }
     );
 

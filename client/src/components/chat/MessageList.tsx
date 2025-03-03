@@ -19,7 +19,8 @@ interface MessageListProps {
 const MessageList: React.FC<MessageListProps> = ({ messages, isThinking }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [shouldScroll, setShouldScroll] = useState(true);
-  console.log();
+
+  console.log("Messages are:", messages);
   // const scrollToBottom = () => {
   //   if (shouldScroll && messagesEndRef.current) {
   //     messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -43,9 +44,9 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isThinking }) => {
   return (
     <div className="flex-1 overflow-y-auto" onScroll={handleScroll}>
       <div className="max-w-4xl mx-auto py-6 px-4">
-        {messages.map((message) => (
+        {messages.map((message, index) => (
           <div
-            key={message.id}
+            key={index}
             className={`mb-6 flex ${
               message.sender === "user" ? "justify-end" : "justify-start"
             }`}
@@ -56,7 +57,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isThinking }) => {
               </div>
             )}
             <div
-              className={`max-w-[100%] rounded-2xl px-4 py-3 ${
+              className={`max-w-[50%] rounded-2xl px-4 py-3 ${
                 message.sender === "user"
                   ? "bg-green-500/90 text-black backdrop-blur-sm"
                   : "bg-zinc-800/80 w-96 text-white backdrop-blur-sm"
