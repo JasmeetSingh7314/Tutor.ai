@@ -26,19 +26,6 @@ class messageHandler {
             user.knownWords
           );
 
-          // const userId = user._id;
-          // const existingMaterial = await this.Material.findOne({ userId });
-          // if (existingMaterial) {
-          //   const updateFields = {};
-
-          //   if (lesson) {
-          //     updateFields.$push = { lesson: { lesson: lesson } };
-          //   }
-          // }
-          // if (Object.keys(updateFields).length > 0) {
-          //   await this.Material.updateOne({ userId }, updateFields);
-          // }
-
           return res.send({
             success: true,
             intent: "lesson",
@@ -50,7 +37,7 @@ class messageHandler {
         case "general":
           const baseResponse = await generateText(
             message,
-            user.targetLanguage,
+            user,
             user.conversations
           );
           return res.send({

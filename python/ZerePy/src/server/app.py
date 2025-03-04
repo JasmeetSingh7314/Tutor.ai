@@ -3,11 +3,11 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 import logging
-import asyncio
-import signal
 import threading
 from pathlib import Path
+from src.action_handler import execute_action
 from src.cli import ZerePyCLI
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("server/app")
@@ -132,21 +132,79 @@ class ZerePyServer:
             except Exception as e:
                 raise HTTPException(status_code=500, detail=str(e))
 
-        @self.app.post("/{name}/action")
+        @self.app.post("/{name}/generate-intent")
         async def agent_action(action_request: ActionRequest,name:str):
             """Execute a single agent action"""
             self.state.cli._load_agent_from_file(name)
+            
+            
             if not self.state.cli.agent:
                 raise HTTPException(status_code=400, detail="No agent loaded")
             print(action_request.action)
+            
             try:
-                result = await asyncio.to_thread(
-                    self.state.cli.agent.perform_action,
-                    connection=action_request.connection,
-                    action=action_request.action,
-                    params=action_request.params
-                )
+                # result = await asyncio.to_thread(
+                #     self.state.cli.agent.perform_action,
+                #     connection=action_request.connection,
+                #     action=action_request.action,
+                #     params=action_request.params
+                # )
+                args={
+                "prompt":action_request.params[0]
+                }
+
+                result=execute_action(self.state.cli.agent,'generate-intent',**args)
+                print(result)
+            
                 return {"status": "success", "result": result}
+            except Exception as e:
+                raise HTTPException(status_code=400, detail=str(e))
+            
+        @self.app.post("/{name}/generate-lesson")
+        async def agent_action(action_request: ActionRequest,name:str):
+            """Execute a single agent action"""
+            #loading the agent
+            
+            self.state.cli._load_agent_from_file(name)
+             
+            if not self.state.cli.agent:
+                raise HTTPException(status_code=400, detail="No agent loaded")
+            print(action_request.action)
+            
+            try:
+                args={
+                "language":action_request.params[0],
+                "level":action_request.params[1],
+                "knownWords":action_request.params[2]
+                }
+                result=execute_action(self.state.cli.agent,'generate-lesson',**args)
+                print(result)
+               
+                return {"status": "success", "result":result}
+            except Exception as e:
+                raise HTTPException(status_code=400, detail=str(e))
+        
+        @self.app.post("/{name}/chat")
+        async def agent_action(action_request: ActionRequest,name:str):
+            """Execute a single agent action"""
+            #loading the agent
+            
+            self.state.cli._load_agent_from_file(name)
+             
+            if not self.state.cli.agent:
+                raise HTTPException(status_code=400, detail="No agent loaded")
+            print(action_request.action)
+            
+            try:
+                args={
+                "prompt":action_request.params[0],
+                "user":action_request.params[1],
+                "conversation_history":action_request.params[2]
+                }
+                result=execute_action(self.state.cli.agent,'chat',**args)
+                print(result)
+               
+                return {"status": "success", "result":result}
             except Exception as e:
                 raise HTTPException(status_code=400, detail=str(e))
 

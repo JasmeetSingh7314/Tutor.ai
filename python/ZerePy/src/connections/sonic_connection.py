@@ -10,6 +10,7 @@ from src.constants.abi import ERC20_ABI
 from src.connections.base_connection import BaseConnection, Action, ActionParameter
 from src.constants.networks import SONIC_NETWORKS
 
+
 logger = logging.getLogger("connections.sonic_connection")
 
 
@@ -210,6 +211,7 @@ class SonicConnection(BaseConnection):
                 )
                 balance = contract.functions.balanceOf(address).call()
                 decimals = contract.functions.decimals().call()
+                print(balance/(10**decimals))
                 return balance / (10 ** decimals)
             else:
                 balance = self._web3.eth.get_balance(address)

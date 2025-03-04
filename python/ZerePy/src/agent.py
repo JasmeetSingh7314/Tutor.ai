@@ -9,7 +9,8 @@ from src.connection_manager import ConnectionManager
 from src.helpers import print_h_bar
 from src.action_handler import execute_action
 import src.actions.twitter_actions  
-
+import src.actions.sonic_actions
+import  src.actions.tutor_actions
 from datetime import datetime
 
 REQUIRED_FIELDS = ["name", "bio", "traits", "examples", "loop_delay", "config", "tasks"]
@@ -99,15 +100,15 @@ class ZerePyAgent:
                 if self.examples:
                     prompt_parts.extend(f"- {example}" for example in self.examples)
 
-                if self.example_accounts:
-                    for example_account in self.example_accounts:
-                        tweets = self.connection_manager.perform_action(
-                            connection_name="twitter",
-                            action_name="get-latest-tweets",
-                            params=[example_account]
-                        )
-                        if tweets:
-                            prompt_parts.extend(f"- {tweet['text']}" for tweet in tweets)
+                # if self.example_accounts:
+                #     for example_account in self.example_accounts:
+                #         tweets = self.connection_manager.perform_action(
+                #             connection_name="twitter",
+                #             action_name="get-latest-tweets",
+                #             params=[example_account]
+                #         )
+                #         if tweets:
+                #             prompt_parts.extend(f"- {tweet['text']}" for tweet in tweets)
 
             self._system_prompt = "\n".join(prompt_parts)
 

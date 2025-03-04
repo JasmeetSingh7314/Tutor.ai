@@ -8,6 +8,7 @@ from openai import OpenAI
 from src.connections.base_connection import BaseConnection, Action, ActionParameter
 from prompts.chat_prompt import generate_system_prompt
 from prompts.intent_prompt import generate_intent_prompt
+
 logger = logging.getLogger("connections.openai_connection")
 
 class OpenAIConnectionError(Exception):
@@ -52,20 +53,20 @@ class OpenAIConnection(BaseConnection):
                 name="generate-text",
                 parameters=[
                     ActionParameter("prompt", True, str, "The input prompt for text generation"),
-                    ActionParameter("Language", True, str, "The language the user wants to learn."),
-                    ActionParameter("conversation",True,str,description="The conversation so far")
+                    ActionParameter("system_prompt", True, str, "The prompt for the agent"),
                     
                 ],
                 description="Generate text using OpenAI models"
             ),
-            "find-intent":Action(
-                name="find-intent",
+            "generate-parsed-text": Action(
+                name="generate-parsed-text",
                 parameters=[
-                    ActionParameter("prompt", True, str, "The input prompt for intent analysis"),
+                    ActionParameter("prompt", True, str, "The input prompt for text generation"),
+                    ActionParameter("system_prompt", True, str, "The prompt for the agent"),
                     
                 ],
-                description="Find out the intent behind the calls"              
-            ),
+                description="Generate parsed text using OpenAI models"
+            ),   
             "check-model": Action(
                 name="check-model",
                 parameters=[
@@ -155,7 +156,7 @@ class OpenAIConnection(BaseConnection):
                 logger.debug(f"Configuration check failed: {e}")
             return False
 
-    def generate_text(self, prompt: str, Language: str,conversation:str,**kwargs) -> str:
+    def generate_text(self, prompt: str, system_prompt:str,**kwargs) -> str:
         """Generate text using OpenAI models"""
         try:
             load_dotenv()
@@ -168,12 +169,6 @@ class OpenAIConnection(BaseConnection):
                 mode=instructor.Mode.JSON
             )
 
-            conversation_array=json.loads(conversation) 
-            system_prompt=generate_system_prompt(conversation_array,Language)
-
-            # # Use configured model if none provided
-            # if not model:
-            #     model = self.config["model"]
 
             completion = client.chat.completions.create(
                 model=self.config["model"],
@@ -189,35 +184,38 @@ class OpenAIConnection(BaseConnection):
         except Exception as e:
             raise OpenAIAPIError(f"Text generation failed: {e}")
     
-    def find_intent(self,prompt: str,**kwargs):
-        # Define the prompt
-        
-        load_dotenv()
-        api_key = os.getenv('OPENAI_API_KEY')
-       
-        client =instructor.patch(
+    def generate_parsed_text(self, prompt: str, system_prompt:str,format,**kwargs) -> str:
+        """Generate text using OpenAI models"""
+        try:
+            load_dotenv()
+            api_key = os.getenv('OPENAI_API_KEY')
+            client =instructor.patch(
                 OpenAI(
                     base_url="https://openrouter.ai/api/v1",
                     api_key=api_key,
                 ),
                 mode=instructor.Mode.JSON
-        )
-        
-        system_prompt=generate_intent_prompt(prompt)
-      
-        # Make the LLM call
-        response = client.chat.completions.create(
-              model=self.config["model"],
-              messages=[
-                   {"role": "system", "content": system_prompt},
-              ],
-                
-        )
+            )
 
-        # Extract the intent from the response
-        intent = response.choices[0].message.content
-        print(intent)
-        return intent
+
+            completion = client.beta.chat.completions.parse(
+                model="deepseek/deepseek-chat:free",
+                response_format=format,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.1,
+                max_tokens=3000
+                
+            )
+
+            return completion.choices[0].message.parsed
+            
+        except Exception as e:
+            raise OpenAIAPIError(f"Text generation failed: {e}")
+    
+    
 
     def check_model(self, model, **kwargs):
         try:

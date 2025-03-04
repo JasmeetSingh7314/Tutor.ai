@@ -13,7 +13,7 @@ const findIntent = async (message) => {
     };
 
     const response = await makeRequestWithRetry(
-      "http://localhost:8000/tutor/action",
+      "http://localhost:8000/tutor/generate-intent",
       intent_check
     );
 
@@ -22,7 +22,7 @@ const findIntent = async (message) => {
     console.log(error);
   }
 };
-const generateText = async (message, language, conversation) => {
+const generateText = async (message, user, conversation) => {
   try {
     const hello = "hello";
 
@@ -30,7 +30,7 @@ const generateText = async (message, language, conversation) => {
     const generalReply = {
       connection: "openai",
       action: "generate-text",
-      params: [message, language, conversationStr],
+      params: [message, JSON.stringify(user), conversationStr],
     };
 
     const config = {
@@ -40,7 +40,7 @@ const generateText = async (message, language, conversation) => {
     };
 
     const response = await makeRequestWithRetry(
-      "http://localhost:8000/tutor/action",
+      "http://localhost:8000/tutor/chat",
       generalReply
     );
 
@@ -65,7 +65,7 @@ const generateLesson = async (language, level, knownWords) => {
       },
     };
     const response = await axios.post(
-      "http://localhost:8000/tutor/action",
+      "http://localhost:8000/tutor/generate-lesson",
       lesson,
       config
     );
