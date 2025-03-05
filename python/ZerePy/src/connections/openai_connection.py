@@ -1,10 +1,13 @@
+import json
 import logging
 import os
-from typing import Dict, Any
+from typing import Dict, Any, List
 from dotenv import load_dotenv, set_key
 import instructor
 from openai import OpenAI
 from src.connections.base_connection import BaseConnection, Action, ActionParameter
+from prompts.chat_prompt import generate_system_prompt
+from prompts.intent_prompt import generate_intent_prompt
 
 logger = logging.getLogger("connections.openai_connection")
 
@@ -50,19 +53,20 @@ class OpenAIConnection(BaseConnection):
                 name="generate-text",
                 parameters=[
                     ActionParameter("prompt", True, str, "The input prompt for text generation"),
-                    ActionParameter("Language", True, str, "The language the user wants to learn."),
+                    ActionParameter("system_prompt", True, str, "The prompt for the agent"),
                     
                 ],
                 description="Generate text using OpenAI models"
             ),
-            "find-intent":Action(
-                name="find-intent",
+            "generate-parsed-text": Action(
+                name="generate-parsed-text",
                 parameters=[
-                    ActionParameter("prompt", True, str, "The input prompt for intent analysis"),
+                    ActionParameter("prompt", True, str, "The input prompt for text generation"),
+                    ActionParameter("system_prompt", True, str, "The prompt for the agent"),
                     
                 ],
-                description="Find out the intent behind the calls"              
-            ),
+                description="Generate parsed text using OpenAI models"
+            ),   
             "check-model": Action(
                 name="check-model",
                 parameters=[
@@ -152,7 +156,7 @@ class OpenAIConnection(BaseConnection):
                 logger.debug(f"Configuration check failed: {e}")
             return False
 
-    def generate_text(self, prompt: str, Language: str,**kwargs) -> str:
+    def generate_text(self, prompt: str, system_prompt:str,**kwargs) -> str:
         """Generate text using OpenAI models"""
         try:
             load_dotenv()
@@ -164,11 +168,7 @@ class OpenAIConnection(BaseConnection):
                 ),
                 mode=instructor.Mode.JSON
             )
-            system_prompt=f"I'm your {Language} tutor. How can I help you today? We can practice conversations, learn new vocabulary, or review grammar concepts."
-            print(prompt,system_prompt)
-            # # Use configured model if none provided
-            # if not model:
-            #     model = self.config["model"]
+
 
             completion = client.chat.completions.create(
                 model=self.config["model"],
@@ -184,47 +184,38 @@ class OpenAIConnection(BaseConnection):
         except Exception as e:
             raise OpenAIAPIError(f"Text generation failed: {e}")
     
-    def find_intent(self,prompt: str,**kwargs):
-        # Define the prompt
-        system_prompt = f"""
-            Classify the following user input into one of these intents:
-            - lesson: The user wants to start or continue a lesson. Examples: "Start a lesson", "Teach me something new", "Continue my lesson".
-            - quiz: The user wants to take a quiz. Examples: "Give me a quiz", "Test my knowledge", "I want to take a test".
-            - word meanings: The user wants to learn the meaning of a word. Examples: "What does this word mean?", "Define this term", "Explain this word".
-            - progress: The user wants to check their learning progress. Examples: "Show me my progress", "How am I doing?", "What's my current level?".
-            - general: The input is unrelated to learning, nonsensical, or unclear. Examples: "Hello", "What's the weather?", "Tell me a joke".
-
-            Rules:
-            1. If the input clearly matches one of the intents (lesson, quiz, word meanings, progress), classify it accordingly.
-            2. If the input is unrelated, nonsensical, or unclear, classify it as "general".
-            3. Return only the intent (lesson, quiz, word meanings, progress, or general). Do not include any additional text.
-
-            User Input: "{prompt}"
-            """
-        
-        load_dotenv()
-        api_key = os.getenv('OPENAI_API_KEY')
-        client =instructor.patch(
+    def generate_parsed_text(self, prompt: str, system_prompt:str,format,**kwargs) -> str:
+        """Generate text using OpenAI models"""
+        try:
+            load_dotenv()
+            api_key = os.getenv('OPENAI_API_KEY')
+            client =instructor.patch(
                 OpenAI(
                     base_url="https://openrouter.ai/api/v1",
                     api_key=api_key,
                 ),
                 mode=instructor.Mode.JSON
-        )
+            )
 
-        # Make the LLM call
-        response = client.chat.completions.create(
-              model=self.config["model"],
-              messages=[
-                   {"role": "system", "content": system_prompt},
-              ],
+
+            completion = client.beta.chat.completions.parse(
+                model="deepseek/deepseek-chat:free",
+                response_format=format,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.1,
+                max_tokens=3000
                 
-        )
+            )
 
-        # Extract the intent from the response
-        intent = response.choices[0].message.content
-        print(intent)
-        return intent
+            return completion.choices[0].message.parsed
+            
+        except Exception as e:
+            raise OpenAIAPIError(f"Text generation failed: {e}")
+    
+    
 
     def check_model(self, model, **kwargs):
         try:

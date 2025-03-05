@@ -10,4 +10,11 @@ router.post("/send-message/:id", (req, res) => {
   handler.messageIntent(req, res);
 });
 
+router.put("/update-messages", (req, res) => {
+  handler.addConversation(req, res);
+});
+router.get("/get-messages/:userID", (req, res) => {
+  handler.getConversations(req, res);
+});
+
 module.exports = router;

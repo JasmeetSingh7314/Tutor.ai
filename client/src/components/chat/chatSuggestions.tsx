@@ -61,7 +61,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
     };
   }, []);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (message.trim()) {
       onSendMessage(message);
       setMessage("");

@@ -16,8 +16,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, data }) => {
   };
 
   return (
-    <div className="border-t border-zinc-800/50 p-4 bg-zinc-900/70 backdrop-blur-md backdrop-filter">
-      <div className="max-w-3xl mx-auto">
+    <div className="border-t border-zinc-800/50 p-4 bg-transparent backdrop-blur-md backdrop-filter">
+      <div className="max-w-7xl mx-auto">
         <div className="flex gap-4 items-end">
           <div className="flex-1 bg-zinc-800/60 rounded-xl overflow-hidden backdrop-blur-sm">
             <textarea

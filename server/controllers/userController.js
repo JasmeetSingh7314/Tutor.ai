@@ -55,7 +55,7 @@ class UserHandler {
     try {
       const address = req.params.walletAddress;
       const userData = await this.User.findOne({ walletAddress: address });
-      console.log("The Found data:", userData);
+
       res.status(200).json({
         success: true,
         message: "User data fetched successfully",

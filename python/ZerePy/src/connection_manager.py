@@ -4,7 +4,6 @@ from typing import Any, List, Optional, Type, Dict
 from src.connections.base_connection import BaseConnection
 from src.connections.openai_connection import OpenAIConnection
 from src.connections.twitter_connection import TwitterConnection
-from src.connections.tutor_connection import TutorConnection
 from src.connections.sonic_connection import SonicConnection
 
 
@@ -26,8 +25,6 @@ class ConnectionManager:
             return SonicConnection
         elif class_name=="openai":
             return OpenAIConnection
-        elif class_name=="tutor":
-            return TutorConnection
        
         return None
 

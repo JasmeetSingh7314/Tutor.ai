@@ -40,9 +40,16 @@ const Lesson = () => {
   const handleNext = () => {
     setCurrentWordIndex((prev) => (prev + 1) % data?.length);
   };
+  const handleWords = async () => {
+    const response = await updateWords(userId, data);
+    console.log(response);
+    if (response?.success) {
+      navigate("/profile");
+    }
+  };
 
   return (
-    <main className="flex flex-col gap-y-12">
+    <main className="flex flex-col gap-y-12 font-nunito">
       <Navbar />
       <div className="min-h-screen bg-background text-foreground transition-colors duration-300 ">
         <main className="container mx-auto px-4 py-20 mt-24">
@@ -53,19 +60,30 @@ const Lesson = () => {
           />
 
           <div className="flex justify-center items-center gap-x-5">
-            <Button
-              variant="ghost"
-              color="warning"
-              onPress={() => {
-                if (isNew) {
-                  updateWords(userId, data);
-                }
-                navigate("/profile");
-              }}
-              className="rounded-md p-6 "
-            >
-              <Menu className="h-5 w-5" /> End Lesson
-            </Button>
+            {isNew ? (
+              <Button
+                variant="ghost"
+                color="warning"
+                onPress={() => {
+                  handleWords();
+                }}
+                className="rounded-md p-6 "
+              >
+                <Menu className="h-5 w-5" /> Save Lesson
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                color="warning"
+                onPress={() => {
+                  navigate("/profile");
+                }}
+                className="rounded-md p-6 "
+              >
+                <Menu className="h-5 w-5" /> Return to profile
+              </Button>
+            )}
+
             <Button
               variant="ghost"
               color="warning"

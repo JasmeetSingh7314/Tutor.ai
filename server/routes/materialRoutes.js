@@ -5,7 +5,7 @@ const Material = require("../models/material");
 const router = express.Router();
 const handler = new MaterialHandler(Material);
 
-router.post("/create-material", (req, res) => {
+router.put("/create-material", (req, res) => {
   handler.createMaterial(req, res);
 });
 router.get("/get-material/:id", (req, res) => {

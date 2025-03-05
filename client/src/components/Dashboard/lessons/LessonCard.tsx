@@ -1,7 +1,5 @@
-import { createQuiz } from "@/apis/materials/createQuiz";
-import { Button } from "@heroui/react";
 import { motion } from "framer-motion";
-import { Menu } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
 
 type LessonCardProps = {
@@ -9,9 +7,7 @@ type LessonCardProps = {
   index: number;
   data: any;
 };
-const LessonCard = ({ lesson, index, data }: LessonCardProps) => {
-  const userId = localStorage.getItem("userId");
-  // console.log(lesson, index);
+const LessonCard = ({ lesson, index }: LessonCardProps) => {
   const navigate = useNavigate();
   const handleCardOnClick = () => {
     navigate("/lesson", {
@@ -39,13 +35,13 @@ const LessonCard = ({ lesson, index, data }: LessonCardProps) => {
       }`}</h3>
       <p className="text-gray-400/55 mb-4">Words covered:</p>
       <ul className="flex flex-col gap-y-5 list-disc px-6">
-        {lesson.lesson.vocab.map((detail: any, index: number) => (
-          <li key={index} className="text-gray-400 text-xl ">
+        {lesson.lesson.vocab.map((detail: any, id: number) => (
+          <li key={id} className="text-gray-400 text-xl ">
             {detail?.word_details?.word}
           </li>
         ))}
       </ul>
-      <Button
+      {/* <Button
         variant="solid"
         color="warning"
         onPress={() => {
@@ -54,7 +50,7 @@ const LessonCard = ({ lesson, index, data }: LessonCardProps) => {
         className="rounded-md p-6 bg-gray-600/45 font-nunito my-4 float-right"
       >
         <Menu className="h-5 w-5" /> Generate Quiz
-      </Button>
+      </Button> */}
     </motion.div>
   );
 };

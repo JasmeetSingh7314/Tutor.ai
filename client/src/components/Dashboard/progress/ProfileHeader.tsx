@@ -12,7 +12,6 @@ const mockProgress: UserProgress = {
 };
 
 const ProfileHeader = (userData: any) => {
-  console.log(userData);
   return (
     <main className="flex flex-col gap-x-5">
       <section className="space-y-6">

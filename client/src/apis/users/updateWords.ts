@@ -1,4 +1,4 @@
-export default function updateWords(userId: string, currentWords: any[]) {
+export default async function updateWords(userId: string, currentWords: any[]) {
   // Updating the known_words
   let knownWords: string[] = [];
 
@@ -19,7 +19,7 @@ export default function updateWords(userId: string, currentWords: any[]) {
     redirect: "follow",
   };
 
-  fetch(`http://localhost:3000/api/users/update-user/${userId}`, requestOptions)
+  await fetch(`http://localhost:3000/api/users/update-user/${userId}`, requestOptions)
     .then((response) => response.json())
     .then((result) => console.log(result))
     .catch((error) => console.error(error));

@@ -1,5 +1,3 @@
-
-
 class MaterialHandler {
   constructor(materialModel) {
     this.Material = materialModel;
@@ -25,7 +23,32 @@ class MaterialHandler {
       const existingMaterial = await this.Material.findOne({ createdBy });
 
       if (existingMaterial) {
-        console.log("user already exists");
+        const updateFields = {};
+
+        if (lesson) {
+          updateFields.$push = { lesson: { lesson: lesson } };
+        }
+        console.log("UPDATE", updateFields);
+
+        if (quiz) {
+          updateFields.$push = { quiz: quiz };
+        }
+
+        console.log("Update fields:", updateFields);
+
+        if (Object.keys(updateFields).length > 0) {
+          await this.Material.updateOne({ createdBy }, updateFields);
+        }
+
+        const updatedMaterial = await this.Material.findOne({
+          createdBy,
+        }).populate("createdBy", "fullName email walletAddress profileImage");
+
+        return res.status(200).json({
+          success: true,
+          message: "Material updated successfully",
+          data: updatedMaterial,
+        });
       }
 
       const newMaterial = await this.Material.create({
@@ -52,6 +75,7 @@ class MaterialHandler {
       const { createdBy, lesson, quiz } = req.body;
 
       const existingMaterial = await this.Material.findOne({ createdBy });
+      console.log(existingMaterial);
 
       if (existingMaterial) {
         const updateFields = {};

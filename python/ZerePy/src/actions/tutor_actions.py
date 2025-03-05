@@ -1,88 +1,116 @@
 from http.client import HTTPException
+import json
 import logging
 
-import httpx
-from src import agent
-from src.types.api_models import LessonRequest
+from dotenv import load_dotenv
+from prompts.intent_prompt import generate_intent_prompt
+from prompts.lesson_prompt import generate_card_prompt
+from prompts.chat_prompt import generate_system_prompt
+from utils.common_functions import get_unique_cards
 from src.action_handler import register_action
+from src.types.card_models import VocabularyCards
 
 logger = logging.getLogger("agent")
 
-NODE_BACKEND_URL = "http://localhost:3000/api/material"
+# Note: These action handlers are currently simple passthroughs to the openai_connection methods.
+
 
 @register_action("generate-intent")
-def generate_intent():
-    return
-
-@register_action("generate-lesson")
-async def generate_lesson():
-    """
-    Create lesson: Sending lesson data through this proxy.
-    """
+def generate_intent(agent,**kwargs):
     try:
-        # Fetch user data
-        # user_response = await get_user(request.address)
-        # known_words = user_response['data']['knownWords']
-        # target_language = user_response['data']['targetLanguage']
-        # prior_experience = user_response['data']['priorExperience']
+        prompt=kwargs.get('prompt')
+        intent_prompt=generate_intent_prompt(prompt)
         
-        Language='Korean'
-        Level='Beginner'
-        KnownWords=['']
-        print(Language,Level,KnownWords)
-        # Create lesson
-        lesson_response=agent.connection_manager.connections["tutor"].generate_lesson(
-            Language,
-            Level,
-            KnownWords
+        llm_call=agent.connection_manager.connections["openai"].generate_text(
+            prompt=prompt,
+            system_prompt=intent_prompt
         )
-        # Prepare final JSON
-        final_json = {
+        # Extract the intent from the response
+        print(llm_call)
+        return llm_call
+        
+    except Exception as e:
+        logger.error(f"Failed to generate intent: {str(e)}")
+        return None
+
+@register_action("chat")
+def generate_chat(agent,**kwargs):
+    try:
+        prompt=kwargs.get('prompt')
+        user=kwargs.get('user')
+        conversation_history=kwargs.get('conversation_history')
+        
+        
+        conversation_array=json.loads(conversation_history) 
+        
+        chat_prompt=generate_system_prompt(json.loads(user),conversation_array,agent._construct_system_prompt())
+        
+        
+        llm_call=agent.connection_manager.connections["openai"].generate_text(
+            prompt=prompt,
+            system_prompt=chat_prompt
+        )
+        # Extract the intent from the response
+        print(llm_call)
+        return llm_call
+        
+    except Exception as e:
+        logger.error(f"Failed to generate intent: {str(e)}")
+        return None
+        
+        
+    except Exception as e:
+        logger.error(f"Failed to generate intent: {str(e)}")
+        return None
+    
+@register_action("generate-lesson")
+def generate_lesson(agent, **kwargs) -> str:
+    """Generate Lessons"""
+    """Function to create the language lesson"""
+    try:
+        logger.info("Generating Lesson")
+        
+        language=kwargs.get("language")
+        level=kwargs.get('level')
+        known_words=kwargs.get('knownWords')
+        
+        print("language is:",language,level,known_words)
+        
+        user_prompt= f"I want to learn {language} and I want to work on my vocab skills. I am currently at {level} level. Teach me other things i already know {known_words}"
+        
+        card_prompt=generate_card_prompt(language,level,known_words)
+        
+        llm_call=agent.connection_manager.connections["openai"].generate_parsed_text(
+            prompt=user_prompt,
+            system_prompt=card_prompt,
+            format=VocabularyCards
             
-            "lesson": lesson_response,
-        }
+        )
+         
+        logger.info("Deck generation completed")
+        
+        unique_cards = get_unique_cards(llm_call.model_dump())
 
-        # # Hit the Node.js backend endpoint
-        # async with httpx.AsyncClient() as client:
-        #     response = await client.post(
-        #         f"{NODE_BACKEND_URL}/create-material",
-        #         json=final_json
-        #     )
-        #     response.raise_for_status()
-        #     logger.info("Material created successfully.")
-
-        return {"message": "Lesson created successfully", "data": final_json}
- 
+        return unique_cards
+    
     except Exception as e:
         logger.error(f"Unexpected error in create_lesson: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-    
-async def get_user(address):
-    """
-    Fetch user data from the Node.js backend by hitting its endpoint.
-    """
-    try:
-        print(address)
-        # Hit the Node.js backend endpoint
-        async with httpx.AsyncClient() as client:
 
-            response = await client.get(f"http://localhost:3000/api/users/get-user/{address}")
-            logger.info(f"Response from backend: {response.status_code}")
-
-            response.raise_for_status()
-
-            lesson_data = response.json()
-            logger.info("Successfully fetched lesson data from the backend.")
-
-
-            return lesson_data 
-
-    except httpx.HTTPStatusError as e:
-        # Handle HTTP errors (e.g., 4xx, 5xx)
-        logger.error(f"HTTP error while fetching lesson data: {e}")
-        raise HTTPException(status_code=e.response.status_code, detail="Error fetching lesson data from the backend")
-
-    except Exception as e:
-        # Handle unexpected errors
-        logger.error(f"Unexpected error in get_lesson: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        
+@register_action("generate-quiz")
+def generate_quiz(agent, **kwargs):
+        try:
+            load_dotenv()
+            # agent.connection_manager.connections["openai"].generate_text(
+            # prompt=
+            # )
+            
+            try: 
+                # If we get here, the model exists
+                return True
+            except Exception:
+                return False
+        except Exception as e:
+            logger.error(f"Failed to generate quiz: {str(e)}")
+            return None

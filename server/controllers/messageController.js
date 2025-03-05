@@ -1,5 +1,6 @@
 const { findIntent, generateText } = require("../services/modelEndpoints");
 const { generateLesson } = require("../services/modelEndpoints");
+const mongoose = require("mongoose");
 
 class messageHandler {
   constructor(userModel, materialModel) {
@@ -14,7 +15,7 @@ class messageHandler {
 
       const intent = await findIntent(message);
 
-      console.log("THe intent is", intent);
+      if (intent.result) console.log("THe intent is", intent);
 
       const user = await this.User.findById(id);
       switch (intent.result) {
@@ -25,19 +26,6 @@ class messageHandler {
             user.knownWords
           );
 
-          const userId = user._id;
-          const existingMaterial = await this.Material.findOne({ userId });
-          if (existingMaterial) {
-            const updateFields = {};
-
-            if (lesson) {
-              updateFields.$push = { lesson: { lesson: lesson } };
-            }
-          }
-          if (Object.keys(updateFields).length > 0) {
-            await this.Material.updateOne({ userId }, updateFields);
-          }
-
           return res.send({
             success: true,
             intent: "lesson",
@@ -47,7 +35,11 @@ class messageHandler {
         case "word meanings":
           console.log("word-meaning");
         case "general":
-          const baseResponse = await generateText(message, "Japanese");
+          const baseResponse = await generateText(
+            message,
+            user,
+            user.conversations
+          );
           return res.send({
             success: true,
             intent: intent,
@@ -67,7 +59,62 @@ class messageHandler {
       const savemessage = await this.User.create(id, {});
     }
   }
-  async getConvos(req, res, id) {}
+
+  async addConversation(req, res) {
+    const { userID, messages } = req.body;
+
+    try {
+      const userInfo = await this.User.findById(userID);
+
+      if (!userInfo) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      userInfo.conversations.push(messages);
+
+      const updatedUser = await userInfo.save();
+
+      res.status(201).json({
+        success: true,
+        message: "Conversation added successfully",
+        data: updatedUser,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  async getConversations(req, res) {
+    const { id } = req.params;
+
+    try {
+      const user = await this.User.findById(id);
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "Conversations retrieved successfully",
+        data: user.conversations,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
   async updateConvos(req, res, id) {
     const { messages } = req.body;
 

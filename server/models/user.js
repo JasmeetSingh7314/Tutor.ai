@@ -15,13 +15,7 @@ const userSchema = new Schema(
     weaknesses: [{ type: Object }],
     completedLessons: [{ type: String }],
     completedQuizzes: [{ type: Schema.Types.ObjectId, ref: "quiz" }],
-    conversations: [
-      {
-        id: { type: Schema.Types.ObjectId, ref: "auto" },
-        name: { type: String },
-        messages: [{ type: Object }],
-      },
-    ],
+    conversations: [{ type: Object }],
   },
   { timestamps: true }
 );
