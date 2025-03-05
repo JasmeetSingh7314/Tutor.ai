@@ -6,6 +6,7 @@ const userRouter = require("./routes/userRoutes");
 const materialRouter = require("./routes/materialRoutes");
 const lessonRouter = require("./routes/lessonRoutes");
 const quizRouter = require("./routes/quizRoutes");
+const progressRouter = require("./routes/progressRoutes");
 
 const messageRouter = require("./routes/messageRoutes");
 
@@ -21,6 +22,7 @@ app.use("/api/material", materialRouter);
 // app.use("/api/lesson", lessonRouter);
 app.use("/api/quiz", quizRouter);
 app.use("/api/message", messageRouter);
+app.use("/api/progress", progressRouter);
 app.options("*", (req, res) => {
   res.set("Access-Control-Allow-Origin", "*");
   res.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
