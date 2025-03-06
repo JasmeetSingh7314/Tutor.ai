@@ -232,6 +232,32 @@ class ZerePyServer:
             except Exception as e:
                 raise HTTPException(status_code=400, detail=str(e))
             
+        @self.app.post("/{name}/get-rewards")
+        async def agent_action(action_request: ActionRequest,name:str):
+            """Execute a single agent action"""
+            #loading the agent
+            
+            self.state.cli._load_agent_from_file(name)
+             
+            if not self.state.cli.agent:
+                raise HTTPException(status_code=400, detail="No agent loaded")
+            print(action_request.action)
+            
+            try:
+                args={
+                "user_address":action_request.params[0],
+                "name":action_request.params[1],
+                "level":action_request.params[2],
+                "title":action_request.params[3]
+                }
+                
+                result=execute_action(self.state.cli.agent,'get-rewards',**args)
+                print(result)
+               
+                return {"status": "success", "result":result}
+            except Exception as e:
+                raise HTTPException(status_code=400, detail=str(e))
+            
         @self.app.post("/agent/start")
         async def start_agent():
             """Start the agent loop"""

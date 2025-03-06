@@ -1,4 +1,4 @@
-export const getMessages = async (userId: string) => {
+export const getMessages = async (userId: any) => {
   try {
     const response = await fetch(
       `http://localhost:3000/api/message/get-messages/${userId}`,

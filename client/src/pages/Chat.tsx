@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Message, Conversation } from "../types";
+import { Message, Conversation, User } from "../types";
 import Header from "../components/chat/Header";
 import MessageList from "../components/chat/MessageList";
 import { chat } from "../apis/chat/chat";
@@ -7,13 +7,12 @@ import { useLocation } from "react-router-dom";
 import ChatInput from "@/components/chat/chatSuggestions";
 import { updateMessage } from "@/apis/chat/updateMessages";
 import { getMessages } from "@/apis/chat/getMessages";
-
 function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isThinking, setIsThinking] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [result, setResult] = useState();
-  const [user, setUser] = useState();
+  const [user, setUser] = useState<User>();
   const [toggle, setToggle] = useState<boolean>();
   const userState = useLocation().state;
 

@@ -1,6 +1,8 @@
 import logging
 import os
 from dotenv import load_dotenv
+from eth_account import Account
+from src.constants.abi import MAIN_CONTRACT_ABI
 from src.action_handler import register_action
 
 logger = logging.getLogger("actions.sonic_actions")
@@ -56,7 +58,58 @@ def get_sonic_balance(agent, **kwargs):
     except Exception as e:
         logger.error(f"Failed to get balance: {str(e)}")
         return None
+    
+@register_action("get-rewards")
+def generate_rewards(agent,user_address, name, level, title):
+    try:    
+            load_dotenv()
+            # Initialize Web3 connection
+            web3 = agent.connection_manager.connections["sonic"]._web3
 
+            # Get contract address and ABI
+            contract_address = os.getenv("CONTRACT_ADDRESS")
+            contract_abi = MAIN_CONTRACT_ABI  # Replace with your contract ABI
+
+            # Create contract instance
+            contract = web3.eth.contract(address=contract_address, abi=contract_abi)
+
+            # Get private key and wallet address
+            private_key_hex = os.getenv('SONIC_PRIVATE_KEY')  # Ensure this is a hex string
+            private_key = bytes.fromhex(private_key_hex.replace('0x', ''))  # Convert to bytes
+            wallet_address = Account.from_key(private_key).address  # Derive wallet address from private key
+
+            # Fetch chain ID
+            chain_id = web3.eth.chain_id
+
+            # Fetch nonce
+            nonce = web3.eth.get_transaction_count(wallet_address)
+
+            # Encode transaction data
+            data = contract.encodeABI(fn_name='processUserAchievement', args=[user_address, name, int(level), title])
+
+            # Build transaction
+            transaction = {
+                'chainId': chain_id,
+                'gas': 3000000,  # Adjust gas limit as needed
+                'gasPrice': web3.to_wei('30', 'gwei'),  # Adjust gas price as needed
+                'nonce': nonce,
+                'to': contract_address,
+                'data': data,
+            }
+
+            # Sign the transaction
+            signed_txn = Account.sign_transaction(transaction, private_key)
+
+            # Send the transaction
+            txn_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+
+            # Wait for the transaction to be mined
+            txn_receipt = web3.eth.wait_for_transaction_receipt(txn_hash)
+            print(f"Transaction successful: {txn_receipt}")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        
 @register_action("send-sonic")
 def send_sonic(agent, **kwargs):
     """Send $S tokens to an address.
