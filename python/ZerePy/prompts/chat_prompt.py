@@ -1,4 +1,4 @@
-def generate_system_prompt( user_data,conversation_history,personality_prompt,):
+def generate_system_prompt( user_data,conversation_history,personality_prompt):
     context = ""
 
     # Add conversation history to the context

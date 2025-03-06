@@ -49,6 +49,30 @@ const generateText = async (message, user, conversation) => {
     console.log(error);
   }
 };
+const getProgress = async (message, user, progress) => {
+  try {
+    const generalReply = {
+      connection: "openai",
+      action: "generate-text",
+      params: [message, JSON.stringify(user), JSON.stringify(progress)],
+    };
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const response = await makeRequestWithRetry(
+      "http://localhost:8000/tutor/progress",
+      generalReply
+    );
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const generateLesson = async (language, level, knownWords) => {
   try {
@@ -74,11 +98,6 @@ const generateLesson = async (language, level, knownWords) => {
   } catch (error) {
     console.log(error);
   }
-};
-module.exports = {
-  findIntent,
-  generateText,
-  generateLesson,
 };
 
 async function makeRequestWithRetry(
@@ -120,3 +139,9 @@ async function makeRequestWithRetry(
     }
   }
 }
+module.exports = {
+  findIntent,
+  generateText,
+  generateLesson,
+  getProgress,
+};

@@ -1,13 +1,8 @@
 import { getMaterial } from "@/apis/materials/getLesson";
 import { useEffect, useRef, useState } from "react";
 import LessonCard from "./LessonCard";
-import { Button } from "@heroui/react";
-import { updateMaterial } from "@/apis/materials/updateMaterial";
 import { useNavigate } from "react-router-dom";
 
-type LessonProps = {
-  userId: string;
-};
 
 const Lessons = () => {
   const [lessonData, setLessonData] = useState([]);
@@ -17,7 +12,7 @@ const Lessons = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const isRender = useRef(true);
-  const userId: string = localStorage.getItem("userId");
+  const userId: string = localStorage.getItem("userId") as string;
   const navigate = useNavigate();
   useEffect(() => {
     const getLesson = async () => {

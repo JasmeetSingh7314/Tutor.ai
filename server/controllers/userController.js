@@ -90,6 +90,10 @@ class UserHandler {
         preference,
         knownWords
       );
+
+      //check for duplicates:
+      var uniqueArray = [...new Set(knownWords)];
+      console.log(uniqueArray);
       const updatedUser = await this.User.findByIdAndUpdate(id, {
         $set: {
           fullName: fullName,
@@ -101,9 +105,8 @@ class UserHandler {
           profileImage: profileImage,
           reviewWords: reviewWords,
           weaknesses: weaknesses,
+          knownWords: knownWords,
         },
-
-        $push: { knownWords: { $each: knownWords } },
       });
       res.status(201).json({
         success: true,

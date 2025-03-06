@@ -12,6 +12,7 @@ def generate_intent_prompt(prompt: str):
         2. If the input is unrelated, nonsensical, or unclear, classify it as "general".
         3. Return ONLY the intent (lesson, quiz, word meanings, progress, or general). DO NOT include any additional text, explanations, or examples.
         4. Ensure the output is EXACTLY one word representing the intent. DO NOT repeat the word or add any other content.
-
+        5. Ensure the output is EXACTLY one word representing the intent. DO NOT repeat the word or add any other content.
+        6. Ensure the output is EXACTLY one word representing the intent. DO NOT repeat the word or add any other content.
         User Input: "{prompt}"
         """

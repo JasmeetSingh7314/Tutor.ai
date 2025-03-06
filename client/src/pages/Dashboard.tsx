@@ -7,10 +7,11 @@ import getUser from "@/apis/users/getUser";
 
 import Lessons from "@/components/Dashboard/lessons/Lessons";
 import ProfileHeader from "@/components/Dashboard/progress/ProfileHeader";
-import QuizPage from "./QuizPage";
 import Quizzes from "@/components/Dashboard/quiz/Quizzes";
 import { Brain, Globe, Sparkles } from "lucide-react";
 import ChatArea from "@/components/Dashboard/progress/ChatArea";
+import { getProgress } from "@/apis/users/getProgress";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 
 // const address: string = localStorage.getItem("walletAddress");
 // const userId: string = localStorage.getItem("userId");
@@ -19,29 +20,50 @@ const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("progress");
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [userData, setUserData] = useState<any>();
+  const [userProgress, setUserProgress] = useState<any>();
 
   useEffect(() => {
     const getUserData = async () => {
-      const address: string = localStorage.getItem("walletAddress");
+      const address = localStorage.getItem("walletAddress") as string;
 
       const user = await getUser(address);
       console.log(user.data);
       setUserData(user.data);
 
+      const progress = await getProgress(user.data._id);
+      console.log("The progress is:", progress.data);
+      setUserProgress(progress.data);
+
       localStorage.setItem("userDetails", JSON.stringify(user.data));
     };
     getUserData();
     setIsLoaded(true);
+
+    //TODO: FIX THIS LOGIC AS IT WONT TRIGGER
+    if (userProgress?.xpRequiredForNextLevel - userProgress?.xp === 0) {
+      toast("Level up!", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+    }
   }, []);
 
-  const userId: string = localStorage.getItem("userId");
+  const userId = localStorage.getItem("userId") as string;
+
   function switchLogic(activeTab: string) {
     switch (activeTab) {
       case "progress":
-        return <ProfileHeader data={userData} />;
+        return <ProfileHeader userData={userData} progress={userProgress} />;
       case "lessons":
         console.log("Lesson activated");
-        return <Lessons userId={userId} />;
+        return <Lessons />;
       case "quizzes":
         console.log("Quizzes");
         return <Quizzes userId={userId} />;
@@ -93,7 +115,9 @@ const Dashboard: React.FC = () => {
                       </div>
                       <div>
                         <h3 className="text-sm font-semibold">Total XP</h3>
-                        <p className="text-sm font-bold text-green-500">{15}</p>
+                        <p className="text-sm font-bold text-green-500">
+                          {userProgress?.xp}
+                        </p>
                       </div>
                     </motion.div>
 
@@ -103,7 +127,9 @@ const Dashboard: React.FC = () => {
                       </div>
                       <div>
                         <h3 className="text-sm font-semibold">Current Level</h3>
-                        <p className="text-sm font-bold text-green-500">{5}</p>
+                        <p className="text-sm font-bold text-green-500">
+                          {userProgress?.level}
+                        </p>
                       </div>
                     </motion.div>
 
@@ -112,15 +138,32 @@ const Dashboard: React.FC = () => {
                         <Globe className="w-5 h-5 text-green-500" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-semibold">Day Streak</h3>
-                        <p className="text-sm font-bold text-green-500">{2}</p>
+                        <h3 className="text-sm font-semibold">XP needed:</h3>
+                        <p className="text-sm font-bold text-green-500">
+                          {userProgress?.xpRequiredForNextLevel -
+                            userProgress?.xp}
+                        </p>
                       </div>
                     </motion.div>
                   </section>
                 </header>
-                <ChatArea data={userData}/>
+                <ChatArea data={userData} />
 
                 <section className="p-12">{switchLogic(activeTab)}</section>
+
+                <ToastContainer
+                  position="bottom-right"
+                  autoClose={5000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick={false}
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="dark"
+                  transition={Bounce}
+                />
               </motion.div>
             )}
           </AnimatePresence>

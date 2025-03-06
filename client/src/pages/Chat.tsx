@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Message, Conversation } from "../types";
-import Sidebar from "../components/chat/Sidebar";
 import Header from "../components/chat/Header";
 import MessageList from "../components/chat/MessageList";
 import { chat } from "../apis/chat/chat";
@@ -20,7 +19,8 @@ function Chat() {
 
   const toggleRef = useRef(true);
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("userDetails"));
+    const userData = JSON.parse(localStorage.getItem("userDetails") as string);
+    console.log("user data is:", userData);
     setUser(userData);
   }, []);
   // Initial welcome message
@@ -28,6 +28,7 @@ function Chat() {
     const conversation = async () => {
       try {
         const userId = user?._id;
+        console.log(userId);
         const getConvo = await getMessages(userId);
         console.log(getConvo);
 
@@ -102,7 +103,6 @@ function Chat() {
 
   // Handle user sending a message
   const handleSendMessage = async (text: string) => {
-    setToggle(!toggle);
     const newMessage: Message = {
       id: Date.now().toString(),
       text,
@@ -126,10 +126,10 @@ function Chat() {
     } catch (err) {
       console.log(err);
     }
+    setToggle(!toggle);
     setMessages((prev) => [...prev, newMessage]);
     setIsThinking(true);
   };
-  
 
   return (
     <div className="flex h-screen bg-zinc-950 text-white overflow-hidden font-nunito ">
@@ -137,15 +137,15 @@ function Chat() {
       {/* <Sidebar conversations={conversations} user={userState.userData} /> */}
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col h-full bg-zinc-950 relative">
+      <div className="w-full h-full flex-col  bg-zinc-950 relative">
         {/* Glassmorphism background effects */}
-        {/* <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-zinc-900/20 pointer-events-none" /> */}
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-10 -left-10 w-80 h-80 bg-green-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-zinc-900/20 pointer-events-none" />
+        {/* <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-500/10 rounded-full blur-3xl pointer-events-none" /> */}
+        {/* <div className="absolute -bottom-10 -left-10 w-80 h-80 bg-green-500/10 rounded-full blur-3xl pointer-events-none" /> */}
 
         {/* Content */}
         <div className="relative flex flex-col h-full z-10">
-          <div className="flex-1 flex flex-col  h-screen my-24">
+          <div className="flex-1 flex flex-col  h-screen my-4">
             <Header language={user} />
             <MessageList messages={conversations} isThinking={isThinking} />
             <ChatInput onSendMessage={handleSendMessage} />

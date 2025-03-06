@@ -12,7 +12,7 @@ const LessonCard = ({ lesson, index }: LessonCardProps) => {
   const handleCardOnClick = () => {
     navigate("/lesson", {
       state: {
-        lesson: lesson.lesson.vocab,
+        lesson: lesson.lesson,
         isNew: false,
         lessonId: lesson._id,
       },

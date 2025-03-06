@@ -5,16 +5,18 @@ class ProgressController {
   }
 
   async addXP(req, res) {
-    const { userID, xpEarned } = req.body;
+    const { userId, xpEarned } = req.body;
 
     try {
-      let progress = await this.Progress.findOne({ userID });
-
+      let progress = await this.Progress.findOne({ userId });
+      let user = await this.User.findById(userId);
+      console.log(userId);
       if (!progress) {
         progress = new this.Progress({
-          userID,
+          userId,
           xp: 0,
           level: 1,
+          tier: "Beginner",
           lessonsCompleted: 0,
           xpRequiredForNextLevel: 100,
           achievements: [],
@@ -27,7 +29,12 @@ class ProgressController {
       while (progress.xp >= progress.xpRequiredForNextLevel) {
         progress.level += 1; // Increase level
         progress.xp -= progress.xpRequiredForNextLevel;
-        progress.xpRequiredForNextLevel = 100 * Math.pow(progress.level, 2);
+        progress.xpRequiredForNextLevel = 10 * Math.pow(progress.level, 2);
+      }
+      if (progress.level > 5 && user.knownWords.length > 20) {
+        progress.tier = "Intermediate";
+      } else if (progress.level > 10 && user.knownWords.length > 100) {
+        progress.tier = "Advanced";
       }
 
       await progress.save();
@@ -60,14 +67,15 @@ class ProgressController {
   // }
 
   async getProgress(req, res) {
-    const { userID } = req.params;
+    const { userId } = req.params;
+    console.log(userId);
 
     try {
-      let progress = await this.Progress.findOne({ userID });
+      let progress = await this.Progress.findOne({ userId });
 
       if (!progress) {
         progress = new this.Progress({
-          userID,
+          userId,
           xp: 0,
           level: 1,
           lessonsCompleted: 0,
