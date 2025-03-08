@@ -1,4 +1,8 @@
 const axios = require("axios");
+const TOKEN_ADDRESS = "0x253d66D58c6f1Df6A38A9a426aA037074bAb40bf";
+
+//TUTOR ACTIONS
+//FINDINTENT: call to find intent -> finding the intent behind the message
 const findIntent = async (message) => {
   try {
     const intent_check = {
@@ -22,6 +26,8 @@ const findIntent = async (message) => {
     console.log(error);
   }
 };
+
+//GENERATE-TEXT: calls to chat and used for basic conversation
 const generateText = async (message, user, conversation) => {
   try {
     const hello = "hello";
@@ -49,6 +55,8 @@ const generateText = async (message, user, conversation) => {
     console.log(error);
   }
 };
+
+//GET-PROGRESS: getting a progress report from TUTOR
 const getProgress = async (message, user, progress) => {
   try {
     const generalReply = {
@@ -74,6 +82,7 @@ const getProgress = async (message, user, progress) => {
   }
 };
 
+//GENERATE-LESSON: used for generating the next lesson for the user
 const generateLesson = async (language, level, knownWords) => {
   try {
     const knownWordsString = knownWords.join(" ");
@@ -100,6 +109,58 @@ const generateLesson = async (language, level, knownWords) => {
   }
 };
 
+///SONIC ACTIONS
+
+//GET-BALANCE: calls to get-sonic-balance
+const getBalance = async (address) => {
+  try {
+    const balanceBody = {
+      connection: "tutor",
+      action: "get-balance",
+      params: [address, TOKEN_ADDRESS],
+    };
+    config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const response = await axios.post(
+      "http://localhost:8000/tutor/get-balance",
+      balanceBody,
+      config
+    );
+    const result = await response.data;
+    return result;
+  } catch (error) {
+    console.log(error);
+  }
+};
+//GET-REWARDS: calls to get-rewards
+const getRewards = async (address, name, level, title) => {
+  try {
+    const balanceBody = {
+      connection: "tutor",
+      action: "get-rewards",
+      params: [address, name, level, title],
+    };
+    config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const response = await axios.post(
+      "http://localhost:8000/tutor/get-rewards",
+      balanceBody,
+      config
+    );
+    const result = await response.data;
+    return result;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//RETRY LOGIC
 async function makeRequestWithRetry(
   url,
   data,
@@ -119,7 +180,7 @@ async function makeRequestWithRetry(
 
       // Check if the intent field is empty
       if (response.data.result === "") {
-        throw new Error("Intent field is empty");
+        throw new Error("Result is empty!");
       }
 
       // If intent field is not empty, return the response
@@ -139,9 +200,13 @@ async function makeRequestWithRetry(
     }
   }
 }
+
+//EXPORTING
 module.exports = {
   findIntent,
   generateText,
   generateLesson,
   getProgress,
+  getBalance,
+  getRewards,
 };

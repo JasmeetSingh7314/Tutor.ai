@@ -45,9 +45,36 @@ const Lesson = () => {
   const handleNext = () => {
     setCurrentWordIndex((prev) => (prev + 1) % data.vocab?.length);
   };
+
   const handleWords = async () => {
     const response = await updateWords(userId, data.vocab);
-    if (response.xp !== 0) {
+    console.log(response);
+    if (response.result?.levelResponse?.levelUp) {
+      toast("Level up!", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+    } else {
+      toast(" same level keep working hard!", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+    }
+    if (response?.xp !== 0) {
       try {
         const response = await updateMaterial(userId, data, {});
         const result = response.json();
@@ -63,11 +90,9 @@ const Lesson = () => {
       toast(`words noted! xp saved is : ${response?.xp}`, {
         position: "bottom-right",
         autoClose: 5000,
-        hideProgressBar: false,
         closeOnClick: false,
         pauseOnHover: true,
         draggable: true,
-        progress: undefined,
         theme: "dark",
         transition: Bounce,
         className: "font-nunito font-bold",

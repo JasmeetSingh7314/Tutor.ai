@@ -7,6 +7,9 @@ from dotenv import load_dotenv, set_key
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 from src.constants.abi import ERC20_ABI
+from src.constants.abi import MAIN_CONTRACT_ABI
+from src.constants.token_abi import TOKEN_ABI
+from src.constants.nft_abi import NFT_ABI
 from src.connections.base_connection import BaseConnection, Action, ActionParameter
 from src.constants.networks import SONIC_NETWORKS
 
@@ -203,12 +206,13 @@ class SonicConnection(BaseConnection):
                     raise SonicConnectionError("No wallet configured")
                 account = self._web3.eth.account.from_key(private_key)
                 address = account.address
-
+            print(token_address,address)
             if token_address:
                 contract = self._web3.eth.contract(
                     address=Web3.to_checksum_address(token_address),
                     abi=self.ERC20_ABI
                 )
+
                 balance = contract.functions.balanceOf(address).call()
                 decimals = contract.functions.decimals().call()
                 print(balance/(10**decimals))

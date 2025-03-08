@@ -4,7 +4,6 @@ import Sidebar from "../components/Dashboard/Sidebar";
 import { Navbar } from "../components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import getUser from "@/apis/users/getUser";
-
 import Lessons from "@/components/Dashboard/lessons/Lessons";
 import ProfileHeader from "@/components/Dashboard/progress/ProfileHeader";
 import Quizzes from "@/components/Dashboard/quiz/Quizzes";
@@ -12,6 +11,7 @@ import { Brain, Globe, Sparkles } from "lucide-react";
 import ChatArea from "@/components/Dashboard/progress/ChatArea";
 import { getProgress } from "@/apis/users/getProgress";
 import { Bounce, toast, ToastContainer } from "react-toastify";
+import { getBalance } from "@/apis/users/getBalance";
 
 // const address: string = localStorage.getItem("walletAddress");
 // const userId: string = localStorage.getItem("userId");
@@ -21,6 +21,7 @@ const Dashboard: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [userData, setUserData] = useState<any>();
   const [userProgress, setUserProgress] = useState<any>();
+  const [userBalance, setUserBalance] = useState<any>();
 
   useEffect(() => {
     const getUserData = async () => {
@@ -34,25 +35,14 @@ const Dashboard: React.FC = () => {
       console.log("The progress is:", progress.data);
       setUserProgress(progress.data);
 
+      const userBalance = await getBalance(address);
+      console.log(userBalance);
+      setUserBalance(userBalance.result);
+
       localStorage.setItem("userDetails", JSON.stringify(user.data));
     };
     getUserData();
     setIsLoaded(true);
-
-    //TODO: FIX THIS LOGIC AS IT WONT TRIGGER
-    if (userProgress?.xpRequiredForNextLevel - userProgress?.xp === 0) {
-      toast("Level up!", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: Bounce,
-      });
-    }
   }, []);
 
   const userId = localStorage.getItem("userId") as string;
@@ -107,6 +97,10 @@ const Dashboard: React.FC = () => {
                     >
                       Your {userData?.targetLanguage} lesson is due today!
                     </motion.div> */}
+                    <span className="font-semibold font-nunito text-[#40c540] flex gap-x-2 mx-6">
+                      {" "}
+                      Balance:<span>{userBalance} $TAI</span>
+                    </span>
                   </article>
                   <section className="flex items-center justify-center gap-x-48 mb-8 w">
                     <motion.div className=" backdrop-blur-sm p-2 rounded-xl flex items-center gap-4">

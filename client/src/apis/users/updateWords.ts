@@ -1,12 +1,10 @@
 import { addProgress } from "./addProgress";
+import { getProgress } from "./getProgress";
 import getUser from "./getUser";
 
-const XP_MULTIPLIER_PER_WORD = 75;
+const XP_MULTIPLIER_PER_WORD = 200;
 
-export default async function updateWords(
-  userId: string ,
-  currentWords: any[]
-) {
+export default async function updateWords(userId: string, currentWords: any[]) {
   // Fetching previous known Words
   const walletAddress = localStorage.getItem("walletAddress") as string;
   //making the user call
@@ -59,6 +57,12 @@ export default async function updateWords(
     redirect: "follow",
   };
 
+  const prevProgress = await getProgress(userId);
+
+  const prevLevel = prevProgress?.data.level;
+
+  console.log("Current level is:", prevLevel);
+
   //Making the call to update the knownWords
   const result = await fetch(
     `http://localhost:3000/api/users/update-user/${userId}`,
@@ -67,7 +71,7 @@ export default async function updateWords(
     .then((response) => {
       return response;
     })
-    .then(async () => await addProgress(userId, gainedXp))
+    .then(async () => await addProgress(userId, gainedXp, prevLevel))
     .catch((error) => console.error(error));
   return {
     result: result,

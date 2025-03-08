@@ -258,6 +258,29 @@ class ZerePyServer:
             except Exception as e:
                 raise HTTPException(status_code=400, detail=str(e))
             
+        @self.app.post("/{name}/get-balance")
+        async def agent_action(action_request: ActionRequest,name:str):
+            """Execute a single agent action"""
+            #loading the agent
+            
+            self.state.cli._load_agent_from_file(name)
+             
+            if not self.state.cli.agent:
+                raise HTTPException(status_code=400, detail="No agent loaded")
+            print(action_request.action)
+            
+            try:
+                args={
+                "address":action_request.params[0],
+                "token_address":action_request.params[1]
+                }
+                
+                result=execute_action(self.state.cli.agent,'get-sonic-balance',**args)
+                print(result)
+               
+                return {"status": "success", "result":result}
+            except Exception as e:
+                raise HTTPException(status_code=400, detail=str(e))
         @self.app.post("/agent/start")
         async def start_agent():
             """Start the agent loop"""
@@ -319,43 +342,7 @@ class ZerePyServer:
             except Exception as e:
                 raise HTTPException(status_code=500, detail=str(e))
             
-        # @self.app.post("/agents/{name}/create-lesson")
-        # async def create_lesson(request: LessonRequest):
-        #     """
-        #     Create lesson: Sending lesson data through this proxy.
-        #     """
-        #     try:
-        #         # Fetch user data
-        #         user_response = await get_user(request.address)
-        #         known_words = user_response['data']['knownWords']
-        #         target_language = user_response['data']['targetLanguage']
-        #         prior_experience = user_response['data']['priorExperience']
-                
-                
-        #         print(known_words,target_language,prior_experience,request.address)
-        #         # Create lesson
-        #         lesson_response = create_language_lesson(target_language, prior_experience, " ".join(known_words))
-        #         # Prepare final JSON
-        #         final_json = {
-        #             "createdBy": request.user_id,
-        #             "lesson": lesson_response,
-        #         }
-
-        #         # Hit the Node.js backend endpoint
-        #         async with httpx.AsyncClient() as client:
-        #             response = await client.post(
-        #                 f"{NODE_BACKEND_URL}/create-material",
-        #                 json=final_json
-        #             )
-        #             response.raise_for_status()
-        #             logger.info("Material created successfully.")
-
-        #         return {"message": "Lesson created successfully", "data": final_json}
-        
-        #     except Exception as e:
-        #         logger.error(f"Unexpected error in create_lesson: {e}")
-        #         raise HTTPException(status_code=500, detail=str(e))
-
+      
 def create_app():
     server = ZerePyServer()
     return server.app

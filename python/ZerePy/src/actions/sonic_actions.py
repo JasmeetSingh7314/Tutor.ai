@@ -2,6 +2,7 @@ import logging
 import os
 from dotenv import load_dotenv
 from eth_account import Account
+from web3 import Web3
 from src.constants.abi import MAIN_CONTRACT_ABI
 from src.action_handler import register_action
 
@@ -33,7 +34,7 @@ def get_token_by_ticker(agent, **kwargs):
 
 @register_action("get-sonic-balance")
 def get_sonic_balance(agent, **kwargs):
-    """Get $S or token balance.
+    """Get $S or TAI balance.
     """
     try:
         address = kwargs.get("address")
@@ -48,9 +49,10 @@ def get_sonic_balance(agent, **kwargs):
             address = account.address
         
         print(address)
+        checksum_address=Web3.to_checksum_address(address)
         # Direct passthrough to connection method - add your logic before/after this call!
         balance=agent.connection_manager.connections["sonic"].get_balance(
-            address=address,
+            address=checksum_address,
             token_address=token_address
         )
         return balance
@@ -96,13 +98,10 @@ def generate_rewards(agent,user_address, name, level, title):
                 'to': contract_address,
                 'data': data,
             }
-
             # Sign the transaction
             signed_txn = Account.sign_transaction(transaction, private_key)
-
             # Send the transaction
             txn_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
-
             # Wait for the transaction to be mined
             txn_receipt = web3.eth.wait_for_transaction_receipt(txn_hash)
             print(f"Transaction successful: {txn_receipt}")

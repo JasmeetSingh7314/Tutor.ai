@@ -1,4 +1,10 @@
-export const addProgress = async (userId: string, gainedXp: number) => {
+import { addLevel } from "./addLevel";
+
+export const addProgress = async (
+  userId: string,
+  gainedXp: number,
+  level: string
+) => {
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
   const xpRaw = JSON.stringify({
@@ -18,7 +24,14 @@ export const addProgress = async (userId: string, gainedXp: number) => {
       xpRequestOptions
     );
     const xpResult = await xpResponse.json();
-    return xpResult;
+    if (xpResult.success) {
+      const result = await addLevel(userId, level);
+      return {
+        success: true,
+        levelResponse: result,
+      };
+    }
+
     console.log(xpResult);
   } catch (err) {
     console.error(err);
