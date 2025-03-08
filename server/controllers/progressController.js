@@ -1,3 +1,5 @@
+const { getRewards } = require("../services/modelEndpoints");
+
 class ProgressController {
   constructor(ProgressModel, UserModel) {
     this.Progress = ProgressModel;
@@ -9,8 +11,9 @@ class ProgressController {
 
     try {
       let progress = await this.Progress.findOne({ userId });
-      let user = await this.User.findById(userId);
-      console.log(userId);
+      let user = await this.User.findOne({ userId });
+      console.log(user);
+
       if (!progress) {
         progress = new this.Progress({
           userId,
@@ -37,7 +40,23 @@ class ProgressController {
         progress.tier = "Advanced";
       }
 
+      const rewardLevels = [1, 5, 10, 50, 100];
+      if (
+        rewardLevels.includes(progress.level) &&
+        !progress.rewardedLevels.includes(progress.level)
+      ) {
+        const address = user.walletAddress;
+        const name = user.fullName;
+        const level = progress.level;
+        const title = progress.tier;
+
+        const rewardResult = await getRewards(address, name, level, title);
+        if (rewardResult && rewardResult.success) {
+          progress.rewardedLevels.push(progress.level);
+        }
+      }
       await progress.save();
+      console.log(progress);
 
       res.status(200).json({
         success: true,
@@ -52,32 +71,20 @@ class ProgressController {
     }
   }
 
-  // async mintNFT(userID, level) {
-  //   try {
-  //     const user = await this.User.findById(userID);
-
-  //     if (!user) {
-  //       throw new Error("User not found");
-  //     }
-
-  //     console.log(`NFT minted for user ${userID} at level ${level}`);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
-
   async getProgress(req, res) {
     const { userId } = req.params;
-    console.log(userId);
 
     try {
       let progress = await this.Progress.findOne({ userId });
+      let user = await this.User.findOne({ userId });
+      console.log(user);
 
       if (!progress) {
         progress = new this.Progress({
           userId,
           xp: 0,
           level: 1,
+          tier: "Beginner",
           lessonsCompleted: 0,
           xpRequiredForNextLevel: 100,
           achievements: [],
@@ -85,6 +92,8 @@ class ProgressController {
 
         await progress.save();
       }
+
+      console.log(user);
 
       res.status(200).json({
         success: true,

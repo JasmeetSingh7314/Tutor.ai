@@ -11,7 +11,7 @@ const progressSchema = new Schema(
     tier: { type: String },
     lessonsCompleted: { type: Number, default: 0 },
     xpRequiredForNextLevel: { type: Number, default: 100 },
-    achievements: [{ type: String }],
+    rewardedLevels: [Number],
   },
   { timestamps: true }
 );
