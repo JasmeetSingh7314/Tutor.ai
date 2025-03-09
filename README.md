@@ -38,12 +38,7 @@ Overcoming API limitations, we integrated **OpenRouter** and **Deepseek** to del
    ```bash
    git clone https://github.com/JasmeetSingh7314/Tutor-AI.git
    ```
-2. Install dependencies:  
-   ```bash
-   cd Tutor-AI
-   npm install
-   pip install -r requirements.txt
-   ```
+2. Install dependencies
 3. Start the development server:  
    ```bash
    npm run dev
