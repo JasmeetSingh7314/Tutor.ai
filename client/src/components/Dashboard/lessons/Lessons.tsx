@@ -54,19 +54,7 @@ const Lessons = () => {
 
   return (
     <section className=" flex flex-col gap-y-8">
-      {/* <div className="flex justify-between items-center gap-x-8">
-        <span className="text-3xl font-nunito text-white text-left">
-          Begin new lesson!
-        </span>
-        <Button
-          variant="solid"
-          size="lg"
-          className="rounded-md bg-cyan-600/45 font-nunito font-bold p-4 tracking-wider"
-          onPress={() => handleNewLesson()}
-        >
-          {loading ? "Generating...." : "New Lesson!"}
-        </Button>
-      </div> */}
+    
 
       <span className="text-3xl font-nunito text-white">Saved Lessons</span>
 

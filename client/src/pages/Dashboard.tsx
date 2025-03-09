@@ -64,14 +64,13 @@ const Dashboard: React.FC = () => {
     <main>
       <Navbar />
 
-      <main className="flex items-start  min-h-screen md:px-64 py-32 bg-[#0a0a0a] text-white font-nunito ">
+      <main className="flex items-start min-h-screen md:px-64 py-32 bg-[#0a0a0a] text-white font-nunito ">
         <Sidebar
           activeTab={activeTab}
           onTabChange={setActiveTab}
           progress={userData?.knownWords?.length}
         />
-
-        <section className="flex-1 ">
+        <section className="flex-1 relative  ">
           <AnimatePresence>
             {isLoaded && (
               <motion.div
@@ -80,7 +79,7 @@ const Dashboard: React.FC = () => {
                 exit={{ opacity: 0, y: -20 }}
                 className="max-w-5xl mx-auto bg-zinc-900/50 rounded-md"
               >
-                <header className=" flex flex-col justify-center gap-y-5  px-16 pt-16">
+                <header className=" flex  flex-col justify-center gap-y-5  px-16 pt-16">
                   <article>
                     <motion.h1
                       initial={{ opacity: 0 }}

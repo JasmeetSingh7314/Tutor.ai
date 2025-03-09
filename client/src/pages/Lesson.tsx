@@ -7,8 +7,12 @@ import { Navbar } from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import { useLocation, useNavigate } from "react-router-dom";
 import updateWords from "@/apis/users/updateWords";
-import { Bounce, ToastContainer, toast } from "react-toastify";
+
 import { updateMaterial } from "@/apis/materials/updateMaterial";
+import {
+  GameToastContainer,
+  showGameToast,
+} from "@/components/common/Gametoast";
 
 const Lesson = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -50,28 +54,16 @@ const Lesson = () => {
     const response = await updateWords(userId, data.vocab);
     console.log(response);
     if (response.result?.levelResponse?.levelUp) {
-      toast("Level up!", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: Bounce,
+      showGameToast.levelUp({
+        message: "Level up!",
+        description: "",
+        points: response.result?.xp,
       });
     } else {
-      toast(" same level keep working hard!", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: Bounce,
+      showGameToast.streak({
+        message: "Keep up the pace!",
+        description: "words noted!",
+        points: response.result?.xp,
       });
     }
     if (response?.xp !== 0) {
@@ -86,18 +78,6 @@ const Lesson = () => {
 
     console.log(response);
     console.log("is it successful?", response);
-    if (response?.result?.success) {
-      toast(`words noted! xp saved is : ${response?.xp}`, {
-        position: "bottom-right",
-        autoClose: 5000,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "dark",
-        transition: Bounce,
-        className: "font-nunito font-bold",
-      });
-    }
 
     // if (response?.data?.userId) {
     //   navigate("/profile");
@@ -159,19 +139,7 @@ const Lesson = () => {
       </div>
 
       <Footer />
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={false}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-        transition={Bounce}
-      />
+      <GameToastContainer />
     </main>
   );
 };

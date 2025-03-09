@@ -11,8 +11,8 @@ class ProgressController {
 
     try {
       let progress = await this.Progress.findOne({ userId });
-      let user = await this.User.findOne({ userId });
-      console.log(user);
+      let user = await this.User.findById(userId);
+      // console.log(user);
 
       if (!progress) {
         progress = new this.Progress({
@@ -39,7 +39,7 @@ class ProgressController {
       } else if (progress.level > 10 && user.knownWords.length > 100) {
         progress.tier = "Advanced";
       }
-
+      let rewardResult;
       const rewardLevels = [1, 5, 10, 50, 100];
       if (
         rewardLevels.includes(progress.level) &&
@@ -47,21 +47,52 @@ class ProgressController {
       ) {
         const address = user.walletAddress;
         const name = user.fullName;
-        const level = progress.level;
+        const level = progress.level.toString();
         const title = progress.tier;
 
-        const rewardResult = await getRewards(address, name, level, title);
-        if (rewardResult && rewardResult.success) {
+        rewardResult = await getRewards(address, name, level, title);
+
+        console.log("The result:", rewardResult);
+
+        if (rewardResult.result && rewardResult.status) {
           progress.rewardedLevels.push(progress.level);
         }
       }
       await progress.save();
-      console.log(progress);
 
       res.status(200).json({
         success: true,
         message: "XP added successfully",
         data: progress,
+        hash: rewardResult?.result,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  async getLessonNFT(req, res) {
+    const { userId, title } = req.body;
+    console.log(userId, title);
+    try {
+      let progress = await this.Progress.findOne({ userId });
+      let user = await this.User.findById(userId);
+      const address = user.walletAddress;
+      const name = user.fullName;
+      const level = progress.level.toString();
+
+      const rewardResult = await getRewards(address, name, level, title);
+
+      console.log("The result:", rewardResult);
+
+      res.status(200).json({
+        success: true,
+        message: "Lesson nft generation successful",
+        data: progress,
+        hash: rewardResult?.result,
       });
     } catch (error) {
       res.status(500).json({

@@ -21,3 +21,98 @@
   animation: flicker 0.5s infinite;
   margin-bottom: 4px;
 }
+/* Toast animations */
+.game-toast-enter {
+  animation: game-toast-slide-in 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)
+    forwards;
+}
+
+.game-toast-exit {
+  animation: game-toast-slide-out 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55)
+      forwards,
+    game-toast-fade-out 0.4s ease forwards;
+}
+
+@keyframes game-toast-slide-in {
+  from {
+    transform: translateX(120%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes game-toast-slide-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes game-toast-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Subtle pulse animation */
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s infinite;
+}
+
+@keyframes pulse-subtle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Toast container styling */
+.game-toast-container {
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  background: transparent;
+}
+
+/* Toast types specific styling */
+.game-toast-achievement,
+.game-toast-level-up,
+.game-toast-success,
+.game-toast-error,
+.game-toast-info,
+.game-toast-warning,
+.game-toast-combo,
+.game-toast-power-up,
+.game-toast-streak {
+  background: transparent !important;
+}
+
+/* Override react-toastify default styles */
+.Toastify__toast {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.Toastify__toast-body {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.Toastify__close-button {
+  color: white !important;
+  opacity: 0.7 !important;
+  padding: 8px !important;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1 !important;
+}

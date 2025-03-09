@@ -1,7 +1,9 @@
+import json
 import logging
 import os
 from dotenv import load_dotenv
 from eth_account import Account
+from hexbytes import HexBytes
 from web3 import Web3
 from src.constants.abi import MAIN_CONTRACT_ABI
 from src.action_handler import register_action
@@ -87,7 +89,8 @@ def generate_rewards(agent,user_address, name, level, title):
             nonce = web3.eth.get_transaction_count(wallet_address)
 
             # Encode transaction data
-            data = contract.encodeABI(fn_name='processUserAchievement', args=[user_address, name, int(level), title])
+            checksum_address=Web3.to_checksum_address(user_address)
+            data = contract.encodeABI(fn_name='processUserAchievement', args=[checksum_address, name, int(level), title])
 
             # Build transaction
             transaction = {
@@ -104,8 +107,15 @@ def generate_rewards(agent,user_address, name, level, title):
             txn_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
             # Wait for the transaction to be mined
             txn_receipt = web3.eth.wait_for_transaction_receipt(txn_hash)
-            print(f"Transaction successful: {txn_receipt}")
+             
+            # print(f"Transaction successful: {txn_receipt.transactionHash.hex()}")
+            
+            txnHash=txn_receipt.transactionHash.hex()
+            
+            link=agent.connection_manager.connections["sonic"]._get_explorer_link(txnHash)
 
+            return txn_receipt.transactionHash.hex()
+              
     except Exception as e:
         print(f"Error: {e}")
         
