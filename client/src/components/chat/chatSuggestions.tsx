@@ -12,7 +12,7 @@ import {
   Clock,
   Pencil,
 } from "lucide-react";
-
+import logo from "../../assets/think.png";
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
 }
@@ -116,17 +116,17 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
           onKeyDown={handleKeyDown}
           onFocus={() => setIsFocused(true)}
           placeholder="Message your language tutor..."
-          className="w-full py-3 px-4 pr-12 bg-zinc-800/80 backdrop-blur-md text-white rounded-full border border-white/10 focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all"
+          className="w-full py-3 pl-4  bg-zinc-800/80 backdrop-blur-md text-white rounded-full border border-white/10 focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all"
         />
         <button
           onClick={handleSend}
-          className="absolute right-3 p-2 text-green-400 hover:text-green-300 transition-colors"
+          className="absolute right-3 p-2 text-green-400 hover:text-green-300 transition-colors hover:bg-green-400/15 hover:rounded-full cursor-pointer "
           disabled={!message.trim()}
         >
-          <Send className="w-5 h-5" />
+          {/* <Send className="w-5 h-5" /> */}
+          <img src={logo} className="size-8" alt="logo" />
         </button>
       </div>
-
     </div>
   );
 };

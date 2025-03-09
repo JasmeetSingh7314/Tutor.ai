@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Send } from "lucide-react";
-
+import logo from "../../assets/think.png";
 interface MessageInputProps {
   onSendMessage: (message: string) => void;
   data: any;
@@ -38,7 +38,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, data }) => {
             onClick={handleSend}
             className="px-4 py-3 rounded-xl bg-green-500/90 text-black font-medium hover:bg-green-400/90 transition-colors flex items-center gap-2 backdrop-blur-sm"
           >
-            <Send size={18} />
+            <img src={logo} className="h-18" alt="logo" />
+            {/* <Send size={18} /> */}
           </button>
         </div>
         <div className="mt-2 text-xs text-zinc-400">

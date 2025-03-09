@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { ConnectWallet } from "../connectWallet";
-
+import logo from "../../assets/text.png";
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -24,8 +24,8 @@ export const Navbar = () => {
   });
 
   const navItems = [
-    { name: "Profile", href: "/profile" },
-    { name: "Chat", href: "/chat" },
+    { name: "profile", href: "/profile" },
+    { name: "chat", href: "/chat" },
   ];
 
   return (
@@ -43,13 +43,13 @@ export const Navbar = () => {
               href="/"
               className="text-[#22B357] text-4xl font-semibold  font-urbanist"
             >
-              Tutor.ai
+              <img src={logo} className="h-24" alt="logo" />
             </a>
           </div>
 
           <div className="hidden md:block">
             {user ? (
-              <div className="ml-10 flex items-center space-x-8">
+              <div className="ml-10 flex items-center space-x-8 font-nunito font-semibold">
                 {navItems.map((item) => (
                   <a
                     key={item.name}
