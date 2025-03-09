@@ -107,7 +107,7 @@ export const ConnectWallet = () => {
             variant="solid"
             onPress={connect}
             size="lg"
-            className="bg-[white]/35 rounded-md text-white text-xl m-10 font-urbanist font-bold uppercase px-4"
+            className="bg-[white]/10 rounded-md text-white text-xl m-10 font-urbanist font-bold uppercase px-4"
           >
             Connect Wallet
           </Button>
