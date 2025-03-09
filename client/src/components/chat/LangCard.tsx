@@ -20,25 +20,10 @@ interface WordDetailsProps {
 const LangCard: React.FC<WordDetailsProps> = ({ wordDetails, words }) => {
   const navigate = useNavigate();
   const handlePress = async () => {
-    const userInfo =
-      localStorage.getItem("userDetails") !== null
-        ? JSON.parse(localStorage.getItem("userDetails"))
-        : "";
-
-    const userId = userInfo._id;
-
-    try {
-      const response = await updateMaterial(userId, words, {});
-      const result = response.json();
-      console.log(result);
-    } catch (err) {
-      console.error(err);
-    }
-
-    navigate("/lesson", { state: { lesson: words.vocab, isNew: true } });
+    navigate("/lesson", { state: { lesson: words, isNew: true } });
   };
   return (
-    <div className="flex flex-col relative max-w-md mx-auto my-4 overflow-hidden rounded-xl backdrop-blur-md bg-white/10 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
+    <div className="flex flex-col float-left w-96 relative max-w-md mx-auto my-4 overflow-hidden rounded-xl backdrop-blur-md bg-white/10 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-green-400/20 rounded-full blur-3xl"></div>
       <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-400/20 rounded-full blur-3xl"></div>
 

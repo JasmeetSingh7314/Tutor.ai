@@ -1,6 +1,6 @@
-def generate_card_prompt(lang: str, level: str,knownwords:str) -> str:
+def generate_card_prompt(lang: str, level: str, knownwords: str) -> str:
     return f"""You are a {lang} vocabulary teacher. Generate 2 vocabulary cards for {level}-level learners. 
-    -MAKE SURE TO NOT REPEAT THESE WORDS:{knownwords} 
+    - MAKE SURE TO NOT REPEAT THESE WORDS: {knownwords} 
     - Return STRICTLY in JSON format.  
     - Use the appropriate script for the word in sentences (e.g., Kanji for Japanese, Hanzi for Chinese, etc.).  
     - Sentences must use the word naturally.  
@@ -10,6 +10,7 @@ def generate_card_prompt(lang: str, level: str,knownwords:str) -> str:
     - Follow the structure of the `VocabularyCards` class provided below:  
 
     {{
+        "summary": "A brief summary of the vocabulary lesson, highlighting the key words and their usage.",
         "vocab": [
             {{
                 "word_details": {{
@@ -44,6 +45,41 @@ def generate_card_prompt(lang: str, level: str,knownwords:str) -> str:
                 }},
                 "practice_tips": {{
                     "tips": "Use flashcards to memorize the verb conjugations and practice using it in sentences daily."
+                }}
+            }},
+            {{
+                "word_details": {{
+                    "word": "hablar",
+                    "reading": "ha-blar",
+                    "meaning": "to speak",
+                    "components": ["ha", "blar"],
+                    "component_meanings": ["to", "talk"],
+                    "literal_meaning": "to talk"
+                }},
+                "pronunciation_guide": {{
+                    "guide": "1. Break it into syllables: 'ha' (ah), 'blar' (blar). 2. Stress the first syllable 'ha'.",
+                    "tips": "Practice the 'h' sound, which is silent in Spanish."
+                }},
+                "usage_examples": {{
+                    "examples": ["Necesito hablar con mi profesor.", "Ellos hablan muy rápido."],
+                    "dialogues": ["A: ¿Puedes hablar español? B: Sí, puedo hablar un poco."]
+                }},
+                "formal_vs_informal": {{
+                    "formal": "hablar (used in all contexts, formal and informal)",
+                    "informal": "hablarse (less common, used colloquially in some regions)"
+                }},
+                "variations": {{
+                    "variations": ["hablante", "hablado", "habla"]
+                }},
+                "writing_guide": {{
+                    "guide": "1. Write 'ha' (h-a). 2. Write 'blar' (b-l-a-r).",
+                    "tips": "Remember that 'hablar' starts with a silent 'h'."
+                }},
+                "cultural_note": {{
+                    "note": "In Spanish-speaking cultures, communication is highly valued, and speaking clearly is seen as a sign of respect."
+                }},
+                "practice_tips": {{
+                    "tips": "Practice speaking with native speakers or language partners to improve fluency."
                 }}
             }}
         ]

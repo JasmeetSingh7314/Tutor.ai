@@ -7,11 +7,18 @@ import { Navbar } from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import { useLocation, useNavigate } from "react-router-dom";
 import updateWords from "@/apis/users/updateWords";
-import { createQuiz } from "@/apis/materials/createQuiz";
+
+import { updateMaterial } from "@/apis/materials/updateMaterial";
+import {
+  GameToastContainer,
+  showGameToast,
+} from "@/components/common/Gametoast";
 
 const Lesson = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [userId, setUserID] = useState<string | null>();
+  const [user, setUser] = useState<any>();
 
   const location = useLocation();
   const data = location.state.lesson;
@@ -26,26 +33,57 @@ const Lesson = () => {
 
   const navigate = useNavigate();
 
-  const [userId, setUserID] = useState<string | null>();
-
   useEffect(() => {
-    setUserID(localStorage.getItem("userId"));
+    setUserID(localStorage.getItem("userId") as string);
+    setUser(JSON.parse(localStorage.getItem("userDetails") as string));
+    console.log(user);
     console.log(userId);
   }, [userId]);
 
   const handlePrevious = () => {
-    setCurrentWordIndex((prev) => (prev - 1 + data?.length) % data.length);
+    setCurrentWordIndex(
+      (prev) => (prev - 1 + data?.length) % data?.vocab.length
+    );
   };
 
   const handleNext = () => {
-    setCurrentWordIndex((prev) => (prev + 1) % data?.length);
+    setCurrentWordIndex((prev) => (prev + 1) % data.vocab?.length);
   };
+
   const handleWords = async () => {
-    const response = await updateWords(userId, data);
+    const response = await updateWords(userId, data.vocab);
     console.log(response);
-    if (response?.success) {
-      navigate("/profile");
+    if (response.result?.levelResponse?.levelUp) {
+      showGameToast.levelUp({
+        message: "Level up!",
+        description: "",
+        points: response.result?.xp,
+      });
+    } else {
+      showGameToast.streak({
+        message: "Keep up the pace!",
+        description: "words noted!",
+        points: response.result?.xp,
+      });
     }
+    if (response?.xp !== 0) {
+      try {
+        const response = await updateMaterial(userId, data, {});
+        const result = response.json();
+        console.log(result);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    console.log(response);
+    console.log("is it successful?", response);
+
+    // if (response?.data?.userId) {
+    //   navigate("/profile");
+    // }
+
+    // navigate("/profile");
   };
 
   return (
@@ -54,7 +92,7 @@ const Lesson = () => {
       <div className="min-h-screen bg-background text-foreground transition-colors duration-300 ">
         <main className="container mx-auto px-4 py-20 mt-24">
           <VocabCard
-            word={data[currentWordIndex]}
+            word={data.vocab[currentWordIndex]}
             onPrevious={handlePrevious}
             onNext={handleNext}
           />
@@ -84,7 +122,7 @@ const Lesson = () => {
               </Button>
             )}
 
-            <Button
+            {/* <Button
               variant="ghost"
               color="warning"
               onPress={() => {
@@ -93,7 +131,7 @@ const Lesson = () => {
               className="rounded-md p-6 "
             >
               <Menu className="h-5 w-5" /> Generate Id
-            </Button>
+            </Button> */}
           </div>
         </main>
 
@@ -101,6 +139,7 @@ const Lesson = () => {
       </div>
 
       <Footer />
+      <GameToastContainer />
     </main>
   );
 };

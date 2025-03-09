@@ -31,7 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     <motion.div
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="w-96 flex-1/3  bg-zinc-900/50 rounded-lg backdrop-blur-lg h-fit p-12 flex flex-col gap-y-8  border-[#959595] border-opacity-20 font-nunito"
+      className="w-96  bg-zinc-900/50 rounded-lg backdrop-blur-lg h-fit p-12 flex flex-col gap-y-8  border-[#959595] border-opacity-20 font-nunito"
     >
       <div className="w-32 h-32 mx-auto font-playwrite text-lg">
         <CircularProgressbar

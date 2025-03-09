@@ -8,7 +8,11 @@ const progressController = new ProgressController(Progress, User);
 
 router.post("/add-xp", (req, res) => progressController.addXP(req, res));
 
-router.get("/get-progress/:userID", (req, res) =>
+router.post("/get-lesson-nft", (req, res) =>
+  progressController.getLessonNFT(req, res)
+);
+
+router.get("/get-progress/:userId", (req, res) =>
   progressController.getProgress(req, res)
 );
 

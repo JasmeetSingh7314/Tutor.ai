@@ -1,6 +1,7 @@
 import { updateMessage } from "@/apis/chat/updateMessages";
+import { BIG_NUMBER } from "@/lib/utils";
 import { Send } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Typewriter from "typewriter-effect";
 const ChatArea = (data: any) => {
@@ -63,9 +64,9 @@ const ChatArea = (data: any) => {
                   strings: [message.text],
                   autoStart: true,
                   delay: 4,
-                  deleteSpeed: 555555555555555555555555555555555555555555555555,
+                  deleteSpeed: BIG_NUMBER,
                 }}
-              ></Typewriter>
+              />
             </div>
           </div>
         ))}

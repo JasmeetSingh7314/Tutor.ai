@@ -63,4 +63,5 @@ class Card(BaseModel):
 
 class VocabularyCards(BaseModel):
     """A Deck of Vocab Cards"""
+    summary:str=Field(...,description="Summary summarising the whole lesson")
     vocab: List[Card]

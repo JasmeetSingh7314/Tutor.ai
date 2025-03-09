@@ -1,11 +1,16 @@
-const { findIntent, generateText } = require("../services/modelEndpoints");
+const {
+  findIntent,
+  generateText,
+  getProgress,
+} = require("../services/modelEndpoints");
 const { generateLesson } = require("../services/modelEndpoints");
 const mongoose = require("mongoose");
 
 class messageHandler {
-  constructor(userModel, materialModel) {
+  constructor(userModel, materialModel, progressModel) {
     this.User = userModel;
     this.Material = materialModel;
+    this.Progress = progressModel;
   }
 
   async messageIntent(req, res) {
@@ -18,6 +23,8 @@ class messageHandler {
       if (intent.result) console.log("THe intent is", intent);
 
       const user = await this.User.findById(id);
+      const progress = await this.Progress.findOne({ userId: id });
+      console.log("progress is: ", progress);
       switch (intent.result) {
         case "lesson":
           const lesson_response = await generateLesson(
@@ -29,8 +36,8 @@ class messageHandler {
           return res.send({
             success: true,
             intent: "lesson",
-            message: "Todays lesson loading....",
-            data: lesson_response.result,
+            message: lesson_response.result.summary,
+            data: lesson_response.result.unique_cards,
           });
         case "word meanings":
           console.log("word-meaning");
@@ -44,6 +51,13 @@ class messageHandler {
             success: true,
             intent: intent,
             message: baseResponse.result,
+          });
+        case "progress":
+          const report = await getProgress(message, user, progress);
+          return res.send({
+            success: true,
+            intent: intent,
+            message: report.result,
           });
       }
     } catch (err) {

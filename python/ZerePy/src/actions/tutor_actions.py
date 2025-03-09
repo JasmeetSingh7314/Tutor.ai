@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from prompts.intent_prompt import generate_intent_prompt
 from prompts.lesson_prompt import generate_card_prompt
 from prompts.chat_prompt import generate_system_prompt
+from prompts.progress_prompt import generate_progress_report
 from utils.common_functions import get_unique_cards
 from src.action_handler import register_action
 from src.types.card_models import VocabularyCards
@@ -63,6 +64,35 @@ def generate_chat(agent,**kwargs):
         logger.error(f"Failed to generate intent: {str(e)}")
         return None
     
+@register_action("get-progress-report")
+def get_progress(agent,**kwargs):
+    try:
+        prompt=kwargs.get('prompt')
+        user=kwargs.get('user')
+        progress=kwargs.get('progress')
+        
+     
+        
+        chat_prompt=generate_progress_report(json.loads(user),json.loads(progress))
+        
+        
+        llm_call=agent.connection_manager.connections["openai"].generate_text(
+            prompt=prompt,
+            system_prompt=chat_prompt
+        )
+        # Extract the intent from the response
+        print(llm_call)
+        return llm_call
+        
+    except Exception as e:
+        logger.error(f"Failed to generate intent: {str(e)}")
+        return None
+        
+        
+    except Exception as e:
+        logger.error(f"Failed to generate intent: {str(e)}")
+        return None
+    
 @register_action("generate-lesson")
 def generate_lesson(agent, **kwargs) -> str:
     """Generate Lessons"""
@@ -89,9 +119,12 @@ def generate_lesson(agent, **kwargs) -> str:
          
         logger.info("Deck generation completed")
         
-        unique_cards = get_unique_cards(llm_call.model_dump())
+        # unique_cards = get_unique_cards(llm_call.model_dump())
 
-        return unique_cards
+        return {
+          "summary":llm_call.model_dump()['summary'],
+           "unique_cards" :get_unique_cards(llm_call.model_dump())        
+        }
     
     except Exception as e:
         logger.error(f"Unexpected error in create_lesson: {e}")

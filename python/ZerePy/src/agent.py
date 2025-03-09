@@ -96,19 +96,21 @@ class ZerePyAgent:
                 prompt_parts.extend(f"- {trait}" for trait in self.traits)
 
             if self.examples or self.example_accounts:
+                prompt_parts.append("\nDo NOT return the text enclosed in "" double quotes make sure its natural and flowy")
                 prompt_parts.append("\nHere are some examples of your style (Please avoid repeating any of these):")
+                
                 if self.examples:
                     prompt_parts.extend(f"- {example}" for example in self.examples)
 
-                # if self.example_accounts:
-                #     for example_account in self.example_accounts:
-                #         tweets = self.connection_manager.perform_action(
-                #             connection_name="twitter",
-                #             action_name="get-latest-tweets",
-                #             params=[example_account]
-                #         )
-                #         if tweets:
-                #             prompt_parts.extend(f"- {tweet['text']}" for tweet in tweets)
+                if self.example_accounts:
+                    for example_account in self.example_accounts:
+                        tweets = self.connection_manager.perform_action(
+                            connection_name="twitter",
+                            action_name="get-latest-tweets",
+                            params=[example_account]
+                        )
+                        if tweets:
+                            prompt_parts.extend(f"- {tweet['text']}" for tweet in tweets)
 
             self._system_prompt = "\n".join(prompt_parts)
 

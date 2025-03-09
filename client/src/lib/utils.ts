@@ -27,3 +27,4 @@ function typewriterEffect({ text, element, speed = 50 }: any) {
   // Start the typewriter effect
   type();
 }
+export const BIG_NUMBER = 999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999;

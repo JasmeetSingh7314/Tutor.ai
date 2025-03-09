@@ -1,3 +1,5 @@
+const { getRewards } = require("../services/modelEndpoints");
+
 class ProgressController {
   constructor(ProgressModel, UserModel) {
     this.Progress = ProgressModel;
@@ -5,16 +7,19 @@ class ProgressController {
   }
 
   async addXP(req, res) {
-    const { userID, xpEarned } = req.body;
+    const { userId, xpEarned } = req.body;
 
     try {
-      let progress = await this.Progress.findOne({ userID });
+      let progress = await this.Progress.findOne({ userId });
+      let user = await this.User.findById(userId);
+      // console.log(user);
 
       if (!progress) {
         progress = new this.Progress({
-          userID,
+          userId,
           xp: 0,
           level: 1,
+          tier: "Beginner",
           lessonsCompleted: 0,
           xpRequiredForNextLevel: 100,
           achievements: [],
@@ -27,15 +32,39 @@ class ProgressController {
       while (progress.xp >= progress.xpRequiredForNextLevel) {
         progress.level += 1; // Increase level
         progress.xp -= progress.xpRequiredForNextLevel;
-        progress.xpRequiredForNextLevel = 100 * Math.pow(progress.level, 2);
+        progress.xpRequiredForNextLevel = 10 * Math.pow(progress.level, 2);
       }
+      if (progress.level > 5 && user.knownWords.length > 20) {
+        progress.tier = "Intermediate";
+      } else if (progress.level > 10 && user.knownWords.length > 100) {
+        progress.tier = "Advanced";
+      }
+      let rewardResult;
+      const rewardLevels = [1, 5, 10, 50, 100];
+      if (
+        rewardLevels.includes(progress.level) &&
+        !progress.rewardedLevels.includes(progress.level)
+      ) {
+        const address = user.walletAddress;
+        const name = user.fullName;
+        const level = progress.level.toString();
+        const title = progress.tier;
 
+        rewardResult = await getRewards(address, name, level, title);
+
+        console.log("The result:", rewardResult);
+
+        if (rewardResult.result && rewardResult.status) {
+          progress.rewardedLevels.push(progress.level);
+        }
+      }
       await progress.save();
 
       res.status(200).json({
         success: true,
         message: "XP added successfully",
         data: progress,
+        hash: rewardResult?.result,
       });
     } catch (error) {
       res.status(500).json({
@@ -45,31 +74,48 @@ class ProgressController {
     }
   }
 
-  // async mintNFT(userID, level) {
-  //   try {
-  //     const user = await this.User.findById(userID);
+  async getLessonNFT(req, res) {
+    const { userId, title } = req.body;
+    console.log(userId, title);
+    try {
+      let progress = await this.Progress.findOne({ userId });
+      let user = await this.User.findById(userId);
+      const address = user.walletAddress;
+      const name = user.fullName;
+      const level = progress.level.toString();
 
-  //     if (!user) {
-  //       throw new Error("User not found");
-  //     }
+      const rewardResult = await getRewards(address, name, level, title);
 
-  //     console.log(`NFT minted for user ${userID} at level ${level}`);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+      console.log("The result:", rewardResult);
+
+      res.status(200).json({
+        success: true,
+        message: "Lesson nft generation successful",
+        data: progress,
+        hash: rewardResult?.result,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
 
   async getProgress(req, res) {
-    const { userID } = req.params;
+    const { userId } = req.params;
 
     try {
-      let progress = await this.Progress.findOne({ userID });
+      let progress = await this.Progress.findOne({ userId });
+      let user = await this.User.findOne({ userId });
+      console.log(user);
 
       if (!progress) {
         progress = new this.Progress({
-          userID,
+          userId,
           xp: 0,
           level: 1,
+          tier: "Beginner",
           lessonsCompleted: 0,
           xpRequiredForNextLevel: 100,
           achievements: [],
@@ -77,6 +123,8 @@ class ProgressController {
 
         await progress.save();
       }
+
+      console.log(user);
 
       res.status(200).json({
         success: true,

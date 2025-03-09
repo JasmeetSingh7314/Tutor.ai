@@ -11,17 +11,18 @@ const mockProgress: UserProgress = {
   streak: 7,
 };
 
-const ProfileHeader = (userData: any) => {
+const ProfileHeader = ({ userData, progress }: any) => {
+  // console.log("profile header:", progress, userData);
   return (
     <main className="flex flex-col gap-x-5">
       <section className="space-y-6">
         <h2 className="text-2xl font-bold mb-6">Language Progress</h2>
 
         <LanguageProgress
-          key={userData?.data?.targetLanguage}
-          language={userData?.data?.targetLanguage}
-          level={userData?.data?.priorExperience}
-          wordsProgress={userData?.data?.knownWords?.length}
+          key={userData?.targetLanguage}
+          language={userData?.targetLanguage}
+          level={progress?.tier}
+          wordsProgress={userData?.knownWords?.length}
         />
       </section>
     </main>
