@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { Button } from "@heroui/react";
 import { Brain, Sparkles, Globe } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const Hero = () => {
+  const navigate = useNavigate();
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
       {/* Animated background with reduced glow */}
@@ -48,6 +50,7 @@ export const Hero = () => {
               variant="solid"
               size="lg"
               className="min-w-[200px] rounded-md bg-[black] text-[#22B357] font-semibold tracking-tight "
+              onPress={() => navigate("/profile")}
             >
               Start Learning Now
             </Button>
@@ -55,6 +58,7 @@ export const Hero = () => {
               variant="shadow"
               size="lg"
               className="min-w-[200px] rounded-md bg-[#22B357] text-black font-semibold tracking-tight "
+              onPress={() => navigate("/chat")}
             >
               Meet Your AI Tutor
             </Button>
