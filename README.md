@@ -66,6 +66,11 @@ Tutor-AI/
 
 
 ---
+## Contract Addresses - 
+
+- TutorAIToken(TAI) contract - 0x253d66D58c6f1Df6A38A9a426aA037074bAb40bf
+- TutorAINFT contract - 0x2817491335CFbb83083d1a85cE385a35414E21Fe
+- TutorAITutor contract - 0xCdb74D7b5A5FF7D1F2054B14Ca556Ad0f18F432E
 
 
 ## 🙏 **Acknowledgments**  
